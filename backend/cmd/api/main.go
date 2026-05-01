@@ -67,6 +67,10 @@ func main() {
 	usersSvc := service.NewUsersService(usersRepo)
 	usersHandler := &handler.UsersHandler{Service: usersSvc, Logger: logger}
 
+	rolesRepo := repository.NewRolesRepository(bobDB)
+	rbacSvc := service.NewRBACService(rolesRepo)
+	adminHandler := &handler.AdminHandler{Users: usersSvc, RBAC: rbacSvc, Logger: logger}
+
 	r := chi.NewRouter()
 	r.Use(chimw.RequestID)
 	r.Use(chimw.Recoverer)
@@ -79,6 +83,11 @@ func main() {
 		MaxAge:           300,
 	}))
 
+	if cfg.Auth.DevMode {
+		logger.Warn("dev-mode auth enabled — X-User-ID header is trusted; never run this in production")
+		r.Use(velimw.AuthDevHeader)
+	}
+
 	r.Get("/healthz", handler.Health)
 	r.Get("/readyz", handler.Ready(pool))
 
@@ -86,6 +95,19 @@ func main() {
 		r.Get("/hello", handler.Hello)
 		r.Post("/users", usersHandler.Create)
 		r.Get("/users/{id}", usersHandler.Get)
+
+		r.Route("/admin", func(r chi.Router) {
+			r.Get("/me", adminHandler.Me)
+
+			r.With(velimw.RequirePermission(rbacSvc, logger, "users:list")).
+				Get("/users", adminHandler.ListUsers)
+			r.With(velimw.RequirePermission(rbacSvc, logger, "roles:list")).
+				Get("/users/{id}/roles", adminHandler.ListUserRoles)
+			r.With(velimw.RequirePermission(rbacSvc, logger, "roles:assign")).
+				Post("/users/{id}/roles", adminHandler.AssignRole)
+			r.With(velimw.RequirePermission(rbacSvc, logger, "roles:assign")).
+				Delete("/users/{id}/roles/{code}", adminHandler.RevokeRole)
+		})
 	})
 
 	r.NotFound(func(w http.ResponseWriter, _ *http.Request) {

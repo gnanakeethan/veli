@@ -39,6 +39,9 @@ type AuthConfig struct {
 	TokenExpiry    time.Duration `yaml:"token_expiry"`
 	AllowedOrigins []string      `yaml:"allowed_origins"`
 	FrontendURL    string        `yaml:"frontend_url"`
+	// DevMode trusts the X-User-ID header as the request actor.
+	// Local development only; never enable in any deploy.
+	DevMode bool `yaml:"dev_mode"`
 }
 
 type ObservabilityConfig struct {
@@ -110,6 +113,9 @@ func applyEnvOverrides(cfg *Config) {
 	}
 	if v := os.Getenv("VELI_AUTH_FRONTEND_URL"); v != "" {
 		cfg.Auth.FrontendURL = v
+	}
+	if v := os.Getenv("VELI_AUTH_DEVMODE"); v != "" {
+		cfg.Auth.DevMode = parseBool(v)
 	}
 	if v := os.Getenv("VELI_LOG_LEVEL"); v != "" {
 		cfg.Observability.LogLevel = v

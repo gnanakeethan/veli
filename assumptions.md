@@ -140,6 +140,26 @@
 
 **Files:** `backend/bobgen.yaml`, `backend/Makefile`, `backend/.gitignore`
 
+## Assumption: Google Sign-in is for admin auth only; end users stay phone-anchored
+
+**Decision:** Google OIDC is being wired (in flight as of 2026-05-01) as the auth method for super_admin and manager accounts — Cloud Parallax team members who already have Google Workspace identities. End users (Northern Province households) remain phone-anchored per the plan §Phase 0 architecture and the Identity Recovery Protocol; they will register via phone OTP when that flow is built.
+
+**Why:** The user asked for Google Sign-in, and it's a sensible separation: admins use Google because they already have it; end users can't be assumed to have Google accounts (the audience is rural Northern Province on mid-range Android, often without a Google account at all). CLAUDE.md's "Suggest WhatsApp/Telegram/Signal" exclusion is about *messaging* services; Google as an identity provider for staff is not the same constraint, but it does send admin emails to Google so the PDPA controller-processor analysis must cover it before any deploy.
+
+**Revisit when:** before Phase 1 launch — confirm the controller-processor agreement with Google (or accept that admin email is in-scope for PDPA). Also revisit if rural users surprise us by all having Google accounts: at that point we could open Google Sign-in to a wider audience as a *secondary* path (phone still primary).
+
+**Files:** `backend/internal/service/auth.go` (planned), `backend/assets/migrations/00003_phase0_admin_auth.sql` (planned), `backend/internal/config/config.go` (planned env vars).
+
+## Assumption: Dev-mode auth is a header trust shim, off by default
+
+**Decision:** `VELI_AUTH_DEVMODE=true` enables the `AuthDevHeader` middleware which trusts the `X-User-ID` request header as the actor. Default is off. Production must replace with phone-OTP / Google OIDC.
+
+**Why:** Local development needs a way to act as a particular user without provisioning an OIDC client. The shim is in `internal/middleware/rbac.go` with a clear comment and a startup `logger.Warn` so it's hard to miss. Smoke tests against the live local DB use this header to exercise admin endpoints.
+
+**Revisit when:** before staging. The shim should be deleted from `cmd/api/main.go`'s wiring (or gated behind a build tag so it's compiled out of release binaries).
+
+**Files:** `backend/internal/middleware/rbac.go`, `backend/internal/config/config.go`, `backend/cmd/api/main.go`
+
 ## Assumption: `golangci-lint` is pinned in the Makefile but not installed
 
 **Decision:** Makefile sets `GOLANGCI_LINT_VERSION := v1.64.5` and `make lint` invokes `golangci-lint run`, but the binary is not installed locally and not pulled in by `tools.go`.

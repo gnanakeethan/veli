@@ -63,6 +63,26 @@ func (s *UsersService) GetByID(ctx context.Context, id string) (domain.User, err
 	return u, nil
 }
 
+// List returns a paginated list of users for the admin UI. Page size
+// is clamped to [1, 200]. Authorisation is enforced upstream by the
+// admin route's RequirePermission("users:list") middleware.
+func (s *UsersService) List(ctx context.Context, limit, offset int) ([]domain.User, error) {
+	if limit <= 0 {
+		limit = 50
+	}
+	if limit > 200 {
+		limit = 200
+	}
+	if offset < 0 {
+		offset = 0
+	}
+	users, err := s.repo.List(ctx, limit, offset)
+	if err != nil {
+		return nil, fmt.Errorf("list users: %w", err)
+	}
+	return users, nil
+}
+
 // Create validates the input, mints a ULID, and persists a new user.
 // On success the returned domain.User has the ID, timestamps, and
 // trimmed display_name and nic_number applied.

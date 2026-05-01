@@ -13,6 +13,7 @@ import (
 	"github.com/aarondl/opt/omit"
 	"github.com/aarondl/opt/omitnull"
 	"github.com/stephenafamo/bob"
+	"github.com/stephenafamo/bob/dialect/psql/sm"
 
 	"github.com/cloudparallax/veli/internal/database/models"
 	"github.com/cloudparallax/veli/internal/domain"
@@ -28,6 +29,7 @@ var ErrUserNotFound = errors.New("user not found")
 type UsersRepository interface {
 	GetByID(ctx context.Context, id string) (domain.User, error)
 	Create(ctx context.Context, user *domain.User) error
+	List(ctx context.Context, limit, offset int) ([]domain.User, error)
 }
 
 // NewUsersRepository returns a Bob-backed UsersRepository. exec may
@@ -75,6 +77,33 @@ func (r *bobUsersRepository) Create(ctx context.Context, user *domain.User) erro
 	user.CreatedAt = inserted.CreatedAt
 	user.UpdatedAt = inserted.UpdatedAt
 	return nil
+}
+
+// List returns up to limit users, ordered by created_at descending,
+// skipping the first offset. Used by the admin user-management UI.
+// Pass limit=0 for the default page size of 50.
+func (r *bobUsersRepository) List(ctx context.Context, limit, offset int) ([]domain.User, error) {
+	if limit <= 0 {
+		limit = 50
+	}
+	if offset < 0 {
+		offset = 0
+	}
+
+	users, err := models.Users.Query(
+		sm.OrderBy(models.Users.Columns.CreatedAt).Desc(),
+		sm.Limit(limit),
+		sm.Offset(offset),
+	).All(ctx, r.exec)
+	if err != nil {
+		return nil, fmt.Errorf("list users: %w", err)
+	}
+
+	out := make([]domain.User, 0, len(users))
+	for _, u := range users {
+		out = append(out, modelToDomain(u))
+	}
+	return out, nil
 }
 
 // modelToDomain projects a Bob-generated *models.User onto the

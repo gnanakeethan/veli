@@ -35,6 +35,13 @@ func (s *stubUsersRepo) Create(_ context.Context, user *domain.User) error {
 	return nil
 }
 
+// List satisfies the UsersRepository interface; service-level List
+// tests live separately and the GetByID/Create tests don't exercise
+// this method, so an empty result is fine.
+func (s *stubUsersRepo) List(_ context.Context, _, _ int) ([]domain.User, error) {
+	return nil, s.err
+}
+
 func TestUsersService_GetByID(t *testing.T) {
 	const validULID = "01ARZ3NDEKTSV4RRFFQ69G5FAV"
 
