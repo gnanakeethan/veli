@@ -47,3 +47,11 @@ export interface HealthResponse {
 export interface ApiErrorEnvelope {
 	error: string;
 }
+
+/** Body for POST /api/v1/users. */
+export interface CreateUserRequest {
+	phone: string;
+	display_name: string;
+	locale: string;
+	nic_number?: string;
+}

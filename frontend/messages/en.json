@@ -28,5 +28,18 @@
 	"tier_community_corroborated_ta": "சமூக சாட்சியம்",
 	"tier_community_corroborated_en": "Community-corroborated",
 	"tier_authority_attested_ta": "அதிகாரப்பூர்வ உறுதி",
-	"tier_authority_attested_en": "Authority-attested"
+	"tier_authority_attested_en": "Authority-attested",
+	"register_user_title": "Register a new user",
+	"register_phone_help": "Example: +94771234567",
+	"register_locale_label": "Preferred language",
+	"register_locale_ta": "Tamil",
+	"register_locale_en": "English",
+	"register_locale_si": "Sinhala",
+	"register_nic_help": "Optional. Linked only after authority-attested verification.",
+	"register_submit": "Register",
+	"invalid_phone_msg": "Invalid phone number. Must start with + and contain 7–15 digits.",
+	"invalid_locale_msg": "Supported languages: Tamil, English, Sinhala.",
+	"invalid_display_name_msg": "Display name is required (max 200 characters).",
+	"register_unknown_error": "Something went wrong. Please try again later.",
+	"register_cta": "Start registration"
 }

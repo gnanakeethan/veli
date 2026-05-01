@@ -28,5 +28,18 @@
 	"tier_community_corroborated_ta": "சமூக சாட்சியம்",
 	"tier_community_corroborated_en": "Community-corroborated",
 	"tier_authority_attested_ta": "அதிகாரப்பூர்வ உறுதி",
-	"tier_authority_attested_en": "Authority-attested"
+	"tier_authority_attested_en": "Authority-attested",
+	"register_user_title": "புதிய பயனர் பதிவு",
+	"register_phone_help": "உதாரணம்: +94771234567",
+	"register_locale_label": "மொழி தேர்வு",
+	"register_locale_ta": "தமிழ்",
+	"register_locale_en": "ஆங்கிலம்",
+	"register_locale_si": "சிங்களம்",
+	"register_nic_help": "விருப்பமானது. அதிகாரப்பூர்வமாக உறுதிப்படுத்தப்பட்ட பின்னரே சேர்க்கப்படும்.",
+	"register_submit": "பதிவு செய்க",
+	"invalid_phone_msg": "தொலைபேசி எண் தவறானது. +94 இல் தொடங்கி 7–15 இலக்கங்கள் இருக்க வேண்டும்.",
+	"invalid_locale_msg": "ஆதரிக்கப்படும் மொழி: தமிழ், ஆங்கிலம், அல்லது சிங்களம்.",
+	"invalid_display_name_msg": "பெயர் தேவை (200 எழுத்துகளுக்குள்).",
+	"register_unknown_error": "ஏதோ தவறு ஏற்பட்டது. சற்று நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.",
+	"register_cta": "பதிவு தொடங்கு"
 }

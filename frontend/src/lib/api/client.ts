@@ -1,5 +1,6 @@
 import type {
 	ApiErrorEnvelope,
+	CreateUserRequest,
 	HealthResponse,
 	HelloResponse,
 	User
@@ -27,6 +28,7 @@ export interface ApiClient {
 	ready(): Promise<HealthResponse>;
 	hello(): Promise<HelloResponse>;
 	getUser(id: string): Promise<User>;
+	createUser(input: CreateUserRequest): Promise<User>;
 }
 
 export interface ApiClientOptions {
@@ -77,6 +79,12 @@ export function createApiClient({ fetch, baseUrl }: ApiClientOptions): ApiClient
 		health: () => request<HealthResponse>('/healthz'),
 		ready: () => request<HealthResponse>('/readyz'),
 		hello: () => request<HelloResponse>('/api/v1/hello'),
-		getUser: (id: string) => request<User>(`/api/v1/users/${encodeURIComponent(id)}`)
+		getUser: (id: string) => request<User>(`/api/v1/users/${encodeURIComponent(id)}`),
+		createUser: (input: CreateUserRequest) =>
+			request<User>('/api/v1/users', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(input)
+			})
 	};
 }

@@ -28,5 +28,18 @@
 	"tier_community_corroborated_ta": "சமூக சாட்சியம்",
 	"tier_community_corroborated_en": "Community-corroborated",
 	"tier_authority_attested_ta": "அதிகாரப்பூர்வ உறுதி",
-	"tier_authority_attested_en": "Authority-attested"
+	"tier_authority_attested_en": "Authority-attested",
+	"register_user_title": "නව පරිශීලකයෙකු ලියාපදිංචි කරන්න",
+	"register_phone_help": "උදාහරණය: +94771234567",
+	"register_locale_label": "භාෂාව",
+	"register_locale_ta": "දෙමළ",
+	"register_locale_en": "ඉංග්‍රීසි",
+	"register_locale_si": "සිංහල",
+	"register_nic_help": "අත්‍යවශ්‍ය නොවේ. බලධාරී සත්‍යාපනයට පසුව පමණක් සම්බන්ධ වේ.",
+	"register_submit": "ලියාපදිංචි කරන්න",
+	"invalid_phone_msg": "වලංගු නොවන දුරකථන අංකය. + සමඟ ආරම්භ කර අංක 7–15 ඇතුළත් විය යුතුය.",
+	"invalid_locale_msg": "ආධාරක භාෂා: දෙමළ, ඉංග්‍රීසි, සිංහල.",
+	"invalid_display_name_msg": "නම අවශ්‍යයි (අක්ෂර 200 ක් දක්වා).",
+	"register_unknown_error": "යමක් වැරදී ඇත. කරුණාකර නැවත උත්සාහ කරන්න.",
+	"register_cta": "ලියාපදිංචි වන්න"
 }

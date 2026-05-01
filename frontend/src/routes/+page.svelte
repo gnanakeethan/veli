@@ -7,6 +7,7 @@
 	import CardHeader from '$lib/components/ui/CardHeader.svelte';
 	import CardContent from '$lib/components/ui/CardContent.svelte';
 	import StatusStrip from '$lib/components/ui/StatusStrip.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -30,7 +31,13 @@
 			<p class="mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg">{m.tagline()}</p>
 		</section>
 
-		<section class="mt-16 grid w-full max-w-5xl grid-cols-1 gap-6 sm:grid-cols-3">
+		<section class="mt-10">
+			<a href="/users/new" aria-label={m.register_cta()}>
+				<Button variant="primary" size="md">{m.register_cta()}</Button>
+			</a>
+		</section>
+
+		<section class="mt-8 grid w-full max-w-5xl grid-cols-1 gap-6 sm:grid-cols-3">
 			<Card>
 				<CardHeader title={m.phase1_title()} />
 				<CardContent>
