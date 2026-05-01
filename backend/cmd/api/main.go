@@ -19,6 +19,7 @@ import (
 	"go.uber.org/zap/zapcore"
 
 	"github.com/cloudparallax/veli/internal/config"
+	"github.com/cloudparallax/veli/internal/db"
 	"github.com/cloudparallax/veli/internal/handler"
 	velimw "github.com/cloudparallax/veli/internal/middleware"
 )
@@ -40,6 +41,25 @@ func main() {
 	}
 	defer func() { _ = logger.Sync() }()
 
+	rootCtx := context.Background()
+
+	pool, err := db.Open(rootCtx, cfg.Database)
+	if err != nil {
+		logger.Fatal("open database", zap.Error(err))
+	}
+	defer pool.Close()
+	logger.Info("database connected",
+		zap.Int32("max_conns", pool.Config().MaxConns),
+		zap.Int32("min_conns", pool.Config().MinConns),
+	)
+
+	if cfg.Database.AutoMigrate {
+		logger.Info("running goose migrations")
+		if err := db.MigrateUp(rootCtx, pool); err != nil {
+			logger.Fatal("migrate up", zap.Error(err))
+		}
+	}
+
 	r := chi.NewRouter()
 	r.Use(chimw.RequestID)
 	r.Use(chimw.Recoverer)
@@ -53,7 +73,7 @@ func main() {
 	}))
 
 	r.Get("/healthz", handler.Health)
-	r.Get("/readyz", handler.Ready)
+	r.Get("/readyz", handler.Ready(pool))
 
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Get("/hello", handler.Hello)
