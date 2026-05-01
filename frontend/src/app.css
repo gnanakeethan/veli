@@ -7,8 +7,10 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ─────────────────────────────────────────────────────────────
-   Veḷi (வெளி) — civic design system tokens (v0.2)
-   Source: docs/design-system.typ + claude.ai/design handoff bundle
+   Veḷi (வெளி) — civic design system tokens (v0.3)
+   Source: docs/design-system.typ + claude.ai/design handoff bundles
+   v0.3 adds motion tokens (5 easings + 5 durations) and the
+   state/steps/stats/timeline/sync component class families.
    ───────────────────────────────────────────────────────────── */
 
 :root {
@@ -65,6 +67,22 @@
 		0 1px 0 rgba(20, 20, 15, 0.04), 0 1px 2px rgba(20, 20, 15, 0.06),
 		0 0 0 0.5px rgba(20, 20, 15, 0.06);
 	--sh-3: 0 4px 16px rgba(20, 20, 15, 0.08), 0 0 0 0.5px rgba(20, 20, 15, 0.07);
+
+	/* ── Motion: five easings + five durations ──
+	   Civic interfaces don't shimmer or vibrate. Use these tokens —
+	   never raw cubic-bezier or millisecond literals — so motion stays
+	   bounded and prefers-reduced-motion can collapse it. */
+	--ease-standard: cubic-bezier(0.4, 0, 0.2, 1); /* default · between two known places */
+	--ease-entrance: cubic-bezier(0, 0, 0.2, 1); /* things arriving · acknowledgements */
+	--ease-exit: cubic-bezier(0.4, 0, 1, 1); /* things leaving · dismissals */
+	--ease-linear: linear; /* loading · indeterminate progress */
+	--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* receipts · success seal · saffron stamp */
+
+	--dur-instant: 80ms; /* micro feedback · press */
+	--dur-fast: 140ms; /* tooltip · chip selection */
+	--dur-base: 220ms; /* most transitions */
+	--dur-slow: 360ms; /* sheets · drawers · pages */
+	--dur-ceremony: 680ms; /* verification seal · receipt fold */
 
 	/* ── Shadcn-compatible aliases (existing components keep working) ── */
 	--background: var(--paper-2);
@@ -854,6 +872,362 @@
 	flex: 1;
 	height: 1px;
 	background: var(--rule);
+}
+
+/* ─── State cards (empty / loading / error) ─── */
+.state-card {
+	background: var(--paper);
+	border: 1px solid var(--rule);
+	border-radius: var(--r-md);
+	padding: 32px 24px;
+	text-align: center;
+	min-height: 220px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+}
+.state-mark {
+	width: 48px;
+	height: 48px;
+	border-radius: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 4px;
+}
+.state-mark.empty {
+	background: var(--paper-3);
+	color: var(--ink-3);
+}
+.state-mark.error {
+	background: var(--alert-soft);
+	color: var(--alert-ink);
+}
+.state-mark.loading {
+	background: var(--primary-soft);
+	color: var(--primary-ink);
+}
+.state-title {
+	font-size: 16px;
+	font-weight: 600;
+}
+.state-body {
+	font-size: 13.5px;
+	color: var(--ink-3);
+	max-width: 36ch;
+	line-height: 1.5;
+}
+.state-footer {
+	margin-top: 8px;
+}
+
+/* Skeleton placeholder. Use .skel.line for text rows. */
+.skel {
+	background: linear-gradient(
+		90deg,
+		var(--paper-3) 0%,
+		var(--paper-2) 50%,
+		var(--paper-3) 100%
+	);
+	background-size: 200% 100%;
+	animation: skel 1.4s var(--ease-linear) infinite;
+	border-radius: var(--r-xs);
+}
+.skel.line {
+	height: 12px;
+}
+@keyframes skel {
+	0% {
+		background-position: 200% 0;
+	}
+	100% {
+		background-position: -200% 0;
+	}
+}
+
+/* ─── Step indicator (multi-step forms) ─── */
+.steps {
+	display: flex;
+	gap: 0;
+	align-items: center;
+	padding: 18px 24px;
+	background: var(--paper);
+	border: 1px solid var(--rule);
+	border-radius: var(--r-md);
+}
+.step {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+.step-mark {
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	background: var(--paper-3);
+	color: var(--ink-3);
+	font-family: var(--f-mono);
+	font-size: 12px;
+	font-weight: 600;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+.step.done .step-mark {
+	background: var(--primary);
+	color: var(--paper);
+}
+.step.active .step-mark {
+	background: var(--ink);
+	color: var(--paper);
+}
+.step-label {
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--ink-3);
+}
+.step.active .step-label {
+	color: var(--ink);
+	font-weight: 600;
+}
+.step.done .step-label {
+	color: var(--ink-2);
+}
+.step-line {
+	flex: 1;
+	height: 1px;
+	background: var(--rule);
+	margin: 0 12px;
+}
+.step.done + .step .step-line {
+	background: var(--primary);
+}
+
+/* ─── Sync queue (offline) ─── */
+.sync {
+	background: var(--paper);
+	border: 1px solid var(--rule);
+	border-radius: var(--r-md);
+	overflow: hidden;
+}
+.sync-h {
+	padding: 14px 18px;
+	border-bottom: 1px solid var(--rule);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background: var(--paper-2);
+}
+.sync-h-l {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 14px;
+	font-weight: 600;
+}
+.sync-row {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 12px 18px;
+	border-bottom: 1px solid var(--rule);
+	font-size: 13.5px;
+}
+.sync-row:last-child {
+	border-bottom: 0;
+}
+.sync-mark {
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	color: var(--paper);
+}
+.sync-mark.q {
+	background: var(--ink-3);
+} /* queued */
+.sync-mark.r {
+	background: var(--info);
+	animation: spin 1.2s var(--ease-linear) infinite;
+} /* running */
+.sync-mark.k {
+	background: var(--primary);
+} /* ok */
+.sync-mark.e {
+	background: var(--alert);
+} /* error */
+@keyframes spin {
+	from {
+		transform: rotate(0);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+.sync-row .sync-name {
+	flex: 1;
+}
+.sync-row .sync-meta {
+	font-family: var(--f-mono);
+	font-size: 11px;
+	color: var(--ink-3);
+}
+
+/* ─── Timeline (vertical status) ─── */
+.timeline {
+	background: var(--paper);
+	border: 1px solid var(--rule);
+	border-radius: var(--r-md);
+	padding: 22px 24px;
+	position: relative;
+}
+.tl-row {
+	display: grid;
+	grid-template-columns: 92px 28px 1fr;
+	gap: 14px;
+	align-items: flex-start;
+	padding: 12px 0;
+	position: relative;
+}
+.tl-time {
+	font-family: var(--f-mono);
+	font-size: 11px;
+	color: var(--ink-3);
+	letter-spacing: 0.04em;
+	padding-top: 4px;
+}
+.tl-axis {
+	display: flex;
+	justify-content: center;
+	position: relative;
+	padding-top: 4px;
+}
+.tl-axis::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	bottom: -28px;
+	width: 1.5px;
+	background: var(--rule);
+}
+.tl-row:last-child .tl-axis::before {
+	display: none;
+}
+.tl-dot {
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	background: var(--paper);
+	border: 2px solid var(--ink-3);
+	position: relative;
+	z-index: 1;
+}
+.tl-dot.done {
+	background: var(--primary);
+	border-color: var(--primary);
+}
+.tl-dot.active {
+	background: var(--accent);
+	border-color: var(--accent);
+	box-shadow: 0 0 0 4px var(--accent-soft);
+}
+.tl-dot.fail {
+	background: var(--alert);
+	border-color: var(--alert);
+}
+.tl-body strong {
+	font-size: 14.5px;
+	font-weight: 600;
+	display: block;
+	margin-bottom: 2px;
+}
+.tl-body .tl-desc {
+	font-size: 13px;
+	color: var(--ink-3);
+	line-height: 1.5;
+}
+
+/* ─── Stats / counters ─── */
+.stats {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 0;
+	background: var(--paper);
+	border: 1px solid var(--rule);
+	border-radius: var(--r-md);
+	overflow: hidden;
+}
+.stat {
+	padding: 22px 18px;
+	border-right: 1px solid var(--rule);
+}
+.stat:last-child {
+	border-right: 0;
+}
+.stat-num {
+	font-family: var(--f-tamil);
+	font-size: 32px;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	line-height: 1;
+}
+.stat-num .unit {
+	font-size: 14px;
+	color: var(--ink-3);
+	font-weight: 500;
+	margin-left: 4px;
+	letter-spacing: 0;
+}
+.stat-label {
+	margin-top: 8px;
+	font-size: 12.5px;
+	color: var(--ink-3);
+}
+.stat-en {
+	font-family: var(--f-latin);
+	font-size: 11px;
+	color: var(--ink-mute);
+	margin-top: 2px;
+	letter-spacing: 0.02em;
+}
+@media (max-width: 720px) {
+	.stats {
+		grid-template-columns: repeat(2, 1fr);
+	}
+	.stat {
+		border-bottom: 1px solid var(--rule);
+	}
+	.stat:nth-child(odd) {
+		border-right: 1px solid var(--rule);
+	}
+	.stat:nth-last-child(-n + 2) {
+		border-bottom: 0;
+	}
+}
+
+/* prefers-reduced-motion: collapse all timed transitions; keep
+   easing curves so any layout-driven movement still feels intact. */
+@media (prefers-reduced-motion: reduce) {
+	:root {
+		--dur-instant: 1ms;
+		--dur-fast: 1ms;
+		--dur-base: 1ms;
+		--dur-slow: 1ms;
+		--dur-ceremony: 1ms;
+	}
+	.skel {
+		animation: none;
+	}
+	.sync-mark.r {
+		animation: none;
+	}
 }
 
 /* Striped placeholder (used where imagery would go) */
