@@ -37,8 +37,8 @@ CREATE TABLE verifications (
     document_id  TEXT NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
     tier         TEXT NOT NULL CHECK (tier IN (
         'self_asserted',
-        'community_witnessed',
-        'authority_verified'
+        'community_corroborated',
+        'authority_attested'
     )),
     attester_id  TEXT NOT NULL,                                  -- user_id or external authority ref
     notes        TEXT NOT NULL DEFAULT '',
