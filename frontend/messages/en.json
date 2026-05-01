@@ -9,5 +9,18 @@
 	"phase2_blurb": "Help households assemble defensible evidence of land ownership — photographs, GPS, witness statements, scanned deeds — versioned and tier-labelled.",
 	"phase3_title": "Agricultural Traceability",
 	"phase3_blurb": "Connect Northern Province producers — Jaffna mango, palmyra, dried fish — to verified buyers with provenance trails from harvest to point of sale.",
-	"footer": "© 2026 Cloud Parallax (Pvt) Ltd. — Jaffna, Sri Lanka."
+	"footer": "© 2026 Cloud Parallax (Pvt) Ltd. — Jaffna, Sri Lanka.",
+	"system_status": "System Status",
+	"backend_reachable": "Backend reachable",
+	"backend_unreachable": "Backend unreachable",
+	"user_not_found": "User not found",
+	"invalid_user_id": "Invalid user ID",
+	"server_error": "Server error — please try again later",
+	"user_field_id": "ID",
+	"user_field_phone": "Phone",
+	"user_field_display_name": "Name",
+	"user_field_nic": "NIC number",
+	"user_field_locale": "Locale",
+	"user_field_created_at": "Registered",
+	"phase_label": "Phase {phase}"
 }

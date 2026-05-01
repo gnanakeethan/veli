@@ -1,6 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { onMount } from 'svelte';
+	import LocaleSwitcher from '$lib/components/locale-switcher.svelte';
 
 	let { children } = $props();
 
@@ -13,5 +14,9 @@
 		}
 	});
 </script>
+
+<div class="fixed right-4 top-4 z-50">
+	<LocaleSwitcher />
+</div>
 
 {@render children?.()}

@@ -3,11 +3,15 @@ module github.com/cloudparallax/veli
 go 1.26.2
 
 require (
+	github.com/aarondl/opt v0.0.0-20250607033636-982744e1bd65
 	github.com/go-chi/chi/v5 v5.2.5
 	github.com/go-chi/cors v1.2.2
 	github.com/jackc/pgx/v5 v5.9.2
+	github.com/jaswdr/faker/v2 v2.9.1
+	github.com/lib/pq v1.10.9
 	github.com/pressly/goose/v3 v3.27.1
 	github.com/stephenafamo/bob v0.43.0
+	github.com/stephenafamo/scan v0.7.0
 	go.uber.org/zap v1.28.0
 	golang.org/x/vuln v1.3.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -23,7 +27,6 @@ require (
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver/v3 v3.3.0 // indirect
 	github.com/Masterminds/sprig/v3 v3.3.0 // indirect
-	github.com/aarondl/opt v0.0.0-20250607033636-982744e1bd65 // indirect
 	github.com/andybalholm/brotli v1.2.1 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -56,7 +59,6 @@ require (
 	github.com/knadh/koanf/providers/env v0.1.0 // indirect
 	github.com/knadh/koanf/providers/file v0.1.0 // indirect
 	github.com/knadh/koanf/v2 v2.1.0 // indirect
-	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-isatty v0.0.21 // indirect
 	github.com/mfridman/interpolate v0.0.2 // indirect
 	github.com/mfridman/xflag v0.1.0 // indirect
@@ -76,7 +78,6 @@ require (
 	github.com/sethvargo/go-retry v0.3.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/spf13/cast v1.7.0 // indirect
-	github.com/stephenafamo/scan v0.7.0 // indirect
 	github.com/tetratelabs/wazero v1.9.0 // indirect
 	github.com/tursodatabase/libsql-client-go v0.0.0-20251219100830-236aa1ff8acc // indirect
 	github.com/urfave/cli/v2 v2.23.7 // indirect

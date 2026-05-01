@@ -3,6 +3,7 @@ internal/database/models/
 internal/database/factory/
 internal/database/dbinfo/
 internal/database/dberrors/
+internal/database/enums/
 
 # Air hot-reload build artifacts.
 tmp/

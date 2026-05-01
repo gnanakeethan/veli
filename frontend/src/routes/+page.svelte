@@ -2,6 +2,9 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import * as m from '$lib/paraglide/messages';
+	import type { PageData } from './+page.server';
+
+	let { data }: { data: PageData } = $props();
 
 	onMount(async () => {
 		try {
@@ -42,4 +45,27 @@
 	<footer class="border-t px-6 py-6 text-center text-sm text-muted-foreground">
 		{m.footer()}
 	</footer>
+
+	<div
+		class="border-t px-6 py-3 text-xs"
+		class:bg-destructive={!data.backend.reachable}
+		class:text-destructive-foreground={!data.backend.reachable}
+		class:bg-card={data.backend.reachable}
+		class:text-muted-foreground={data.backend.reachable}
+	>
+		<span class="font-medium">{m.system_status()}:</span>
+		{#if data.backend.reachable}
+			<span class="ml-1">{m.backend_reachable()}</span>
+			{#if data.backend.hello}
+				<span class="ml-2 rounded bg-secondary px-1.5 py-0.5 text-secondary-foreground">
+					{m.phase_label({ phase: data.backend.hello.phase })}
+				</span>
+			{/if}
+		{:else}
+			<span class="ml-1">{m.backend_unreachable()}</span>
+			{#if data.backend.error}
+				<span class="ml-2 opacity-75">({data.backend.error})</span>
+			{/if}
+		{/if}
+	</div>
 </div>

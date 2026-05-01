@@ -31,6 +31,9 @@ plugins:
     pkgname: dberrors
   enums:
     # No Postgres ENUM types in the current schema — the verification
-    # tier is enforced via a CHECK constraint on a TEXT column. Re-enable
-    # and gitignore internal/database/enums when we add real enums.
-    disabled: true
+    # tier is enforced via a CHECK constraint on a TEXT column. The
+    # generated enums package is still required because the factory
+    # plugin imports from it, so we keep it enabled and gitignore the
+    # output directory like the other generated packages.
+    destination: internal/database/enums
+    pkgname: enums
