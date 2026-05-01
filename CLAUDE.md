@@ -106,24 +106,33 @@ The strategic plan is multi-file by design so different topics evolve independen
 
 ## Frontend design system
 
-The canonical reference is `docs/design-system.typ` — read it before adding any UI. It defines the colour, typography, spacing, and radius tokens, the component catalogue, the page-shell pattern, the three-tier verification visual contract (with normative dual-language tier labels), the accessibility checklist, and the i18n authoring rules.
+The canonical reference is `docs/design-system.typ` (v0.2, civic palette). Read it before adding any UI. It defines the colour, typography, spacing, radius, and elevation tokens; the four design commitments (Tamil-first, Trust-by-citation, Low-bandwidth, Dignified); the component catalogue; the page-shell, hero, list-of-properties, trust, receipt, and SMS patterns; the three-tier verification visual contract with normative dual-language tier labels; the accessibility checklist; and the i18n authoring rules.
+
+The aesthetic is civic-utilitarian: warm paper background (`--paper-2`), civic green primary (`#0E4D3F`), saffron-gold accent for verification (`#D9A441`), JetBrains Mono for metadata and IDs, Noto Sans Tamil for everything user-facing. Three theme variants (`civic` / `paper` / `ink`) and three density variants (`compact` / `regular` / `comfy`) toggle via `data-theme` and `data-density` on `<html>`. v0.1 (zinc OKLCH shadcn default) is superseded.
 
 The implementation lives at `frontend/src/lib/components/ui/`. Available primitives:
 
 | Primitive | Purpose |
 |---|---|
-| `Button` | Variants `primary`/`secondary`/`ghost`/`destructive`; sizes `sm`/`md`/`lg`. 44 px min touch target at `md`. |
-| `Card` + `CardHeader` + `CardContent` + `CardFooter` | Composable surface. The phase cards on the landing page are the canonical example. |
-| `Badge` | Inline pill for short generic state. |
-| `TierBadge` | Specialised pill for the three verification tiers — always renders **both** EN and TA labels, with visual hierarchy reflecting legal effect. Never substitute or invent tiers. |
+| `Button` | Kinds `primary` / `secondary` / `ghost` / `alert`; sizes `sm` / `md` / `lg`; `block`. 48 px min height at `md` (≥ WCAG 2.5.5). |
+| `Card` + `CardHeader` + `CardContent` + `CardFooter` | Paper surface with hairline border, optional header / content / footer. |
+| `Badge` | Inline pill for short generic state. Kinds `primary` / `accent` / `alert` / `info` / `mute`; optional dot. |
+| `TierBadge` | Specialised pill for the three verification tiers — **always** renders both EN and TA labels. Visual hierarchy follows legal effect: `self_asserted` → bronze, `community_corroborated` → silver, `authority_attested` → gold. Never substitute, paraphrase, or invent a fourth tier. |
 | `StatusStrip` | Thin bar reporting backend reachability + phase number. |
-| `LocaleSwitcher` | Three-button group calling Paraglide `setLocale`. Mounted in the layout. |
+| `LocaleSwitcher` | Three-button segmented control (`தமிழ் / English / සිංහල`) calling Paraglide `setLocale`. |
+| `Field` | Label + input + (hint or error) wrapper. The `<input>` / `<select>` / `<textarea>` is supplied with `class="field-input"`. |
+| `LRow` | The workhorse list row: optional leading icon, title, meta, optional EN sub-label, optional trail snippet. Used for procedure lists, document evidence, user fields. |
+| `Icon` | Line icon (lucide-svelte). 24 px viewBox, 1.6 px stroke, `currentColor`. |
+| `OfflinePill` | Saffron pill that always reads "இணையமில்லை · OFFLINE". |
+| `Progress` | Slim progress bar in civic green on a paper-3 track. |
+| `Segmented` | Generic segmented-control primitive. |
 
 Rules of engagement:
 
-- **Reach for the primitive first.** Before writing `class="rounded-lg border bg-card p-6 ..."` for a card-shaped thing, use `<Card>`. Same for buttons, badges, status indicators.
+- **Reach for the primitive first.** Before writing `class="rounded-lg border bg-card p-6 ..."` for a card-shaped thing, use `<Card>`. Same for buttons, badges, status indicators, list rows, fields.
 - **Compose classes with `cn(...)` from `$lib/utils`** — never string-concatenate Tailwind classes.
-- **Tier labels are normative.** Use `<TierBadge tier="self_asserted" />` etc. with the exact tier values; do not paraphrase the labels rendered inside.
+- **Tier labels are normative.** Use `<TierBadge tier="self_asserted" />` etc. with the exact tier values; do not paraphrase the labels rendered inside. Both EN and TA must always render.
+- **The `app.css` component classes are the source of styling.** `.btn`, `.card`, `.field`, `.lrow`, `.badge`, `.tier`, `.trust`, `.receipt`, `.sms`, `.offline-pill`, `.progress`, `.seg`, `.hero-mark` etc. are defined there. Primitives compose them; never reinvent.
 - **Update `docs/design-system.typ` when the system changes** — the doc is the source of truth, the components implement it. If they drift, the doc wins and the components get fixed.
 - **Tamil-first authoring** for every string (including `aria-label`); add to all three of `messages/{en,ta,si}.json`.
 

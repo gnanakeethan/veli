@@ -1,10 +1,13 @@
-// Veḷi — Frontend Design System
-// Canonical reference for the SvelteKit frontend: tokens, components,
-// patterns, and authoring rules. Update this file when the system
-// changes; the components under frontend/src/lib/components/ui/ are
-// the implementation, and CLAUDE.md points contributors here first.
+// Veḷi — Frontend Design System (v0.2)
+// Canonical reference for the SvelteKit frontend: tokens, principles,
+// components, patterns, and authoring rules. This file is the source
+// of truth. The components under frontend/src/lib/components/ui/ are
+// the implementation; CLAUDE.md points contributors here first.
 //
-// Build with: typst compile docs/design-system.typ
+// Compile: typst compile docs/design-system.typ
+// v0.2 (2026-05-01) adopts the civic palette + utilitarian aesthetic
+// described in the claude.ai/design handoff bundle. v0.1 (zinc OKLCH,
+// shadcn-svelte default) is superseded.
 
 #set document(
   title: "Veḷi — Frontend Design System",
@@ -38,183 +41,189 @@
 #align(center)[
   #text(20pt, weight: "bold")[Veḷi — Frontend Design System]
   #v(0.3em)
-  #text(10pt, fill: gray)[Cloud Parallax (Pvt) Ltd · v0.1 · 2026-05-01]
+  #text(10pt, fill: gray)[Cloud Parallax (Pvt) Ltd · v0.2 · 2026-05-01]
 ]
 
 #v(1em)
 
-= Purpose and audience
+= Purpose
 
-This document is the canonical reference for visual and interaction
-patterns used in the Veḷi smartphone surface (Tamil-first PWA, Android
-wrap via Capacitor). It is read by every contributor adding a page or
-component, and it is binding: pages must reach for the primitives
-defined here rather than inline raw Tailwind classes for things the
-primitives already cover.
+Canonical reference for visual and interaction patterns used in the
+Veḷi smartphone surface (Tamil-first PWA, Android wrap via Capacitor).
+Read before adding any UI. Pages reach for the primitives defined here
+rather than inline raw Tailwind classes for things the primitives
+already cover.
 
-Veḷi is operated by Cloud Parallax (Pvt) Ltd for users in Sri Lanka's
-Northern Province. Three constraints shape every decision:
+This is v0.2 — a civic-utilitarian system that replaces the prior
+shadcn-svelte zinc base. The shift was driven by a design exploration
+on `claude.ai/design`; the chosen aesthetic is "modern utilitarian /
+government-grade", calibrated for rural Northern Province households
+on mid-range Android.
 
-- *Tamil first.* The display register is colloquial Jaffna Tamil, not
-  literary Tamil and not Indian Tamil. Tamil messages are authored
-  first; English and Sinhala follow as translations.
-- *Mobile first, low-end Android.* The PWA targets intermittent 3G,
-  modest CPUs, and small screens. Touch targets must be reachable
-  one-handed; transitions must not be the only signal.
-- *Honest tier labelling.* Every document or claim shows its
-  verification tier explicitly in both English and Tamil. The
-  platform never inflates a self-asserted artifact into something it
-  is not. The tier values `self_asserted`, `community_corroborated`,
-  `authority_attested` are normative and never paraphrased.
+= Four commitments
+
+These are non-negotiable. Every design decision is judged against them.
+
+#table(
+  columns: (1fr, 1.2fr, 2.4fr),
+  stroke: 0.5pt + gray,
+  inset: 6pt,
+  align: left,
+  table.header([*Tamil*], [*English*], [*Detail*]),
+  [தமிழ் முதன்மை], [Tamil-first], [Designed in Tamil. English follows when it must, never as default. Display register: colloquial Jaffna Tamil, never literary, never Indian Tamil.],
+  [நம்பிக்கை], [Trust by citation], [Every claim links back to a government source or an audit trail. The platform never inflates a self-asserted artefact into something it is not.],
+  [குறை வளம்], [Low-bandwidth], [Works on a Rs. 18,000 Android with one bar of signal — or no signal at all. Service-worker offline cache is part of the contract.],
+  [மதிப்பு], [Dignified], [No condescension. Big targets, plain words, real receipts. No marketing language; no decorative SVGs.],
+)
 
 = Tokens
 
-== Colour
+== Colour palette
 
-The base palette is the shadcn-svelte zinc scale in OKLCH, declared
-in `frontend/src/app.css`. Tailwind utility classes resolve to these
-CSS custom properties; *never* hex-code colours in templates.
+Three theme variants share the same token names; only the values
+change. The default theme is *civic*; *paper* is a warmer alternate;
+*ink* is the dark variant. Set on `<html>` via `data-theme`.
 
 #table(
-  columns: (1.2fr, 2fr, 2.4fr),
+  columns: (1fr, 1.4fr, 2.4fr),
   stroke: 0.5pt + gray,
   inset: 6pt,
   align: left,
-  table.header([*Token*], [*Tailwind class*], [*Use*]),
-  [`background`], [`bg-background`], [Page canvas behind everything.],
-  [`foreground`], [`text-foreground`], [Default body text.],
-  [`primary`], [`bg-primary` / `text-primary`], [Headlines, key actions, the Tamil hero word.],
-  [`secondary`], [`bg-secondary` / `text-secondary-foreground`], [Inactive toggles, neutral pills.],
-  [`muted`], [`bg-muted` / `text-muted-foreground`], [De-emphasised supporting text and surfaces.],
-  [`accent`], [`bg-accent`], [Hover and focus surfaces.],
-  [`destructive`], [`bg-destructive`], [Error states, "backend unreachable", invalid input.],
-  [`card`], [`bg-card`], [Raised surfaces (cards, dialogs, status strips).],
-  [`border`], [`border` / `border-border`], [Default 1 px hairline.],
-  [`ring`], [`ring-ring`], [Focus halos at 2 px width with 2 px offset.],
+  table.header([*Token*], [*Civic value*], [*Use*]),
+  [`--paper`],     [#raw("#FFFFFF")], [Card surface.],
+  [`--paper-2`],   [#raw("#F7F4EE")], [Page background — warm off-white.],
+  [`--paper-3`],   [#raw("#EFEAE0")], [Inset / chip / panel.],
+  [`--rule`],      [#raw("#DCD5C7")], [Hairline borders, dividers.],
+  [`--ink`],       [#raw("#14140F")], [Primary text. 17.8:1 against `--paper-2` (AAA).],
+  [`--ink-2`],     [#raw("#3B3A33")], [Secondary text.],
+  [`--ink-3`],     [#raw("#6B6859")], [Metadata, captions.],
+  [`--primary`],   [#raw("#0E4D3F")], [Civic green. CTAs, OK status, primary actions. 11.2:1 (AAA).],
+  [`--accent`],    [#raw("#D9A441")], [Saffron-gold. Verification, official seals, hero dot. 3.1:1 (AA-large).],
+  [`--alert`],     [#raw("#A6363D")], [Deep red. Alerts, destructive actions, rejected. 6.8:1 (AAA).],
+  [`--info`],      [#raw("#2B4A6B")], [Ink slate. Information, secondary status. 9.4:1 (AAA).],
 )
 
-Dark mode swaps the same tokens; never hard-code light-mode values.
+Each non-neutral colour has a `-soft` companion (light tint, used as
+badge background) and an `-ink` companion (dark variant, used as
+badge text). Example: `--accent-soft: #F8EDD3`, `--accent-ink: #6B4F14`.
+
+The full token set (including `--rule-strong`, `--ink-mute`,
+`--primary-soft`, `--primary-ink`, `--alert-soft`, `--alert-ink`,
+`--info-soft`) is declared in `frontend/src/app.css`. Tailwind v4
+`@theme inline` exposes them as utility tokens (`bg-paper-2`,
+`text-ink-3`, `bg-accent-soft`, etc.).
+
+*Rule:* never hex-code colours in templates. Always use the token,
+either as a CSS variable (`color: var(--ink)`) or a Tailwind utility
+(`text-ink`).
 
 == Typography
 
-Display register is Tamil. The system font stack must include a
-Northern Province–suitable Tamil font (Inter, Noto Sans Tamil, or the
-device default). The Tailwind type scale collapses to four levels:
+Three font families, each with a clear role:
 
 #table(
-  columns: (1fr, 1fr, 2.6fr),
+  columns: (1fr, 2fr, 2.6fr),
   stroke: 0.5pt + gray,
   inset: 6pt,
   align: left,
-  table.header([*Role*], [*Class*], [*Notes*]),
-  [Hero], [`text-7xl sm:text-8xl font-bold`], [Reserved for the Tamil wordmark "வெளி" on the landing surface only.],
-  [Page title], [`text-xl font-semibold`], [`<h1>` on every page below the layout.],
-  [Section], [`text-lg font-semibold`], [`<h2>` inside cards.],
-  [Body], [`text-sm` or `text-base`], [Default copy. Use `text-base sm:text-lg` for long-form prose.],
-  [Caption], [`text-xs text-muted-foreground`], [Tier labels, badges, footnotes.],
+  table.header([*Family*], [*Token*], [*Used for*]),
+  [Noto Sans Tamil], [`--f-tamil`], [Body, headings, all user-facing copy. Primary face. Weights 300–800.],
+  [Inter], [`--f-latin`], [Latin numerals, English transliterations, EN sub-labels.],
+  [JetBrains Mono], [`--f-mono`], [Section tags, metadata captions, IDs, receipts, SMS bodies, technical labels. Conveys "auditable / transparent".],
 )
 
-Always pair Tamil and English: never replace a Tamil label with an
-English-only one in user-facing surfaces. The IVR/USSD/SMS surfaces
-follow their own register rules and are out of scope here.
+Type scale (display → caption):
+
+#table(
+  columns: (1fr, 1fr, 1fr, 2fr),
+  stroke: 0.5pt + gray,
+  inset: 6pt,
+  align: (left, right, right, left),
+  table.header([*Role*], [*Size*], [*Weight*], [*Use*]),
+  [Display],     [72px], [700], [Hero only. The "வெளி." mark on the landing page.],
+  [Heading 1],   [36px], [600], [Page titles. Section titles in the design-system page.],
+  [Heading 2],   [24px], [600], [Card titles, sub-section headings.],
+  [Title],       [18px], [600], [In-card titles, list-row titles.],
+  [Body],        [16px], [400], [Default copy.],
+  [Caption],     [13px], [500], [Helper text, hints, errors.],
+  [Mono · meta], [11px], [500], [Section tags, metadata, IDs, technical labels.],
+)
 
 == Spacing and radius
 
-Tailwind's default scale; preferred increments are `2 / 3 / 4 / 6 / 8 / 12 / 16`
-(0.5 rem multiples). Never invent custom pixel values when a token will do.
+Spacing scale (for components and layout): xs 4 · sm 8 · md 14 ·
+lg 20 · xl 32 · 2xl 48 · 3xl 72. Density is variable: `data-density`
+on `<html>` toggles compact / regular / comfy, which scales the row
+heights and paddings of list rows and similar components.
 
-Radius tokens come from `--radius: 0.625rem`:
+Radius scale: xs 4 · sm 6 · md 10 · lg 14 · xl 20 · pill 999. Cards
+use `--r-md`; pills use `--r-pill`; inputs use `--r-sm`; large CTAs
+use `--r-md`.
 
-- `rounded-sm` — pills, badges
-- `rounded-md` — buttons, inputs, status strips
-- `rounded-lg` — cards, dialog surfaces
-- `rounded-xl` — modal overlays, hero containers
+== Elevation
 
-Borders are 1 px (`border`) on `border-border`. Avoid heavier weights
-unless you are crossing a destructive or focus boundary.
+Three shadow tiers, very restrained — paper-feeling, never floating.
+`--sh-1` is a hairline. `--sh-2` adds a 1px y-offset. `--sh-3` is the
+raised state for popovers. Avoid heavier shadows.
 
 = Components
 
-Every primitive lives at `frontend/src/lib/components/ui/<name>.svelte`
-and is re-exported from `frontend/src/lib/components/ui/index.ts`. Pages
-import the primitive, never the underlying Tailwind elements when a
+Every primitive lives at `frontend/src/lib/components/ui/<Name>.svelte`
+and is re-exported from the barrel `frontend/src/lib/components/ui/index.ts`.
+Pages import the primitive, never the underlying CSS classes when a
 primitive applies.
 
-Primitives use Svelte 5 runes (`$props`, `$state`, `$derived`, `$effect`)
-and the `cn(...)` helper from `$lib/utils` for class composition with
-`tailwind-merge`.
-
-== Button
-
-#raw("import Button from '$lib/components/ui/Button.svelte'")
-
-Variants: `primary` (default), `secondary`, `ghost`, `destructive`.
-Sizes: `sm`, `md` (default), `lg`. Touch target is 44 px minimum at
-`md` to satisfy WCAG 2.5.5 on phones.
-
-#raw("<Button variant=\"primary\" onclick={handleSubmit}>{m.submit()}</Button>")
-
-== Card
-
-Surface for grouped content: a header (title + optional badge), an
-optional content body, and an optional footer. The current landing
-page's three-phase strip is the canonical example.
-
-#raw("<Card>
-  <CardHeader title={m.phase1_title()} />
-  <CardContent>{m.phase1_blurb()}</CardContent>
-</Card>")
-
-== Badge
-
-Inline pill for short states (locale, role, count). Variants:
-`default`, `secondary`, `destructive`. Use `Badge` for generic state;
-use `TierBadge` (below) for verification tiers — never mix them.
-
-== TierBadge
-
-A specialised `Badge` for the three-tier verification model. It
-*always* renders both English and Tamil labels per the architectural
-contract in the strategic plan §Phase 0. Visual treatment makes the
-hierarchy of legal effect obvious without saying so:
-
 #table(
-  columns: (1.4fr, 1.4fr, 1.6fr, 2fr),
+  columns: (1.4fr, 3.2fr),
   stroke: 0.5pt + gray,
   inset: 6pt,
   align: left,
-  table.header([*Tier value*], [*EN label*], [*TA label*], [*Visual*]),
-  [`self_asserted`], [Self-asserted], [சுய அறிவிப்பு], [`bg-muted text-muted-foreground` — visibly the lightest.],
-  [`community_corroborated`], [Community-corroborated], [சமூக சாட்சியம்], [`bg-secondary text-secondary-foreground` — neutral, no claim of legal effect.],
-  [`authority_attested`], [Authority-attested], [அதிகாரப்பூர்வ உறுதி], [`bg-primary text-primary-foreground` — the most confident treatment, used only when the tier carries legal effect.],
+  table.header([*Primitive*], [*Purpose*]),
+  [`Button`], [Variants `primary` / `secondary` / `ghost` / `alert`; sizes `sm` / `md` / `lg`; `block`. 48 px min height (≥ 44 WCAG) at `md`. Composes the `.btn` class family.],
+  [`Card` + `CardHeader` + `CardContent` + `CardFooter`], [Raised paper surface with hairline border, optional header / content / footer. Composes `.card`.],
+  [`Badge`], [Inline pill for short generic state. Variants `primary` / `accent` / `alert` / `info` / `mute`. Optional dot.],
+  [`TierBadge`], [Three-tier verification visual. Always renders *both* the EN and TA tier labels — never one without the other. Visual hierarchy follows legal effect: `self_asserted` → bronze, `community_corroborated` → silver, `authority_attested` → gold.],
+  [`StatusStrip`], [Thin bar reporting backend reachability and phase number. Civic green when reachable; alert-soft when unreachable.],
+  [`LocaleSwitcher`], [Three-button segmented control (`தமிழ் / English / සිංහල`) calling Paraglide `setLocale`. Composes `.seg`.],
+  [`Field`], [Label + input + (hint or error) wrapper. The `<input>`/`<select>`/`<textarea>` is supplied by the consumer with `class="field-input"`.],
+  [`LRow`], [The workhorse list row. Optional leading icon, title, meta, optional EN sub-label, optional trail (snippet). Used for procedure lists, document evidence, buyer offers, user fields.],
+  [`Icon`], [Line icon (lucide-svelte under the hood). 24 px viewBox, 1.6 px stroke, `currentColor`. Filled variant available via `filled` prop.],
+  [`OfflinePill`], [Saffron pill that reads "இணையமில்லை · OFFLINE". Always-visible signal when the service worker is serving cached content.],
+  [`Progress`], [Slim progress bar in civic green on a paper-3 track. Used for evidence completeness, sync progress.],
+  [`Segmented`], [Generic segmented-control primitive (the same `.seg` used by `LocaleSwitcher`).],
 )
 
-Never substitute tier names. Never add a fourth tier, even visually.
-If a UI surface needs to express a derived state (e.g. "expired
-attestation"), do it with a separate adjacent badge, not by changing
-the tier label.
+== TierBadge contract
 
-== StatusStrip
+The three tiers are normative. Their values, English labels, Tamil
+labels, and visual treatment are listed below. Never substitute,
+paraphrase, or invent a fourth.
 
-Thin bar at the bottom of a page (or pinned to the layout) reporting
-system reachability. Two states:
+#table(
+  columns: (1.6fr, 1.4fr, 1.6fr, 1.6fr),
+  stroke: 0.5pt + gray,
+  inset: 6pt,
+  align: left,
+  table.header([*Tier value*], [*EN*], [*TA*], [*Visual*]),
+  [`self_asserted`], [Self-asserted], [சுய அறிவிப்பு], [Bronze (`tier-bronze`) — visibly lowest-effort.],
+  [`community_corroborated`], [Community-corroborated], [சமூக சாட்சியம்], [Silver (`tier-silver`) — neutral, no claim of legal effect.],
+  [`authority_attested`], [Authority-attested], [அதிகாரப்பூர்வ உறுதி], [Gold (`tier-gold`) — saffron-soft tones, used only when the tier carries legal effect.],
+)
 
-- `reachable` — `bg-card text-muted-foreground`, with an optional
-  phase-number `Badge` from the backend `hello` payload.
-- `unreachable` — `bg-destructive text-destructive-foreground`, plus
-  the parsed error string at reduced opacity for dev visibility.
-
-The current landing page's status strip is the reference; primitives
-should preserve its exact visual.
-
-== LocaleSwitcher
-
-Three-button group (`தமிழ் / English / සිංහල`) calling Paraglide's
-`setLocale`. Active locale uses `bg-primary text-primary-foreground`;
-inactive uses `bg-secondary text-secondary-foreground`. Mounted at
-`fixed top-4 right-4 z-50` in the layout. Buttons are 44 px tall.
+The dual-language label is the architectural contract from
+`docs/plan/02_phase0_foundations.typ`. A surface that needs to express
+a *derived* state (e.g. "expired attestation") does so with a separate
+adjacent badge — never by changing the tier label.
 
 = Patterns
+
+== Hero
+
+The landing page uses the giant Tamil wordmark with a saffron dot
+accent: `<h1 class="hero-mark">வெளி<span class="dot">.</span></h1>`.
+`clamp(72px, 12vw, 168px)` so it scales from phone to desktop.
+Bilingual metadata (`<dl class="hero-meta">`) sits beside or below
+the mark with `dt` in mono uppercase and `dd` in body.
 
 == Page shell
 
@@ -226,18 +235,59 @@ Every page wraps content in:
   </main>
 </div>")
 
-The landing page widens to `max-w-5xl`. The user-detail page uses the
-default `max-w-2xl`. Avoid full-bleed layouts on phones.
+Landing widens to `max-w-5xl`. User detail uses `max-w-2xl`. Avoid
+full-bleed on phones.
+
+== Section header
+
+#raw("<div class=\"sec-tag\">06 · கூறுகள் / Components</div>
+<h2 class=\"text-[36px] font-semibold leading-tight tracking-tight\">…</h2>
+<p class=\"text-ink-2 max-w-[64ch]\">…</p>")
+
+The mono section tag with the civic-green dot is the recurring section
+marker. Use bilingual `NN · தமிழ் / English` form when the section
+has a Tamil concept name.
 
 == List of properties
 
-Definition list (`<dl>` / `<dt>` / `<dd>`) divided by hairlines is the
-canonical pattern for displaying record fields (e.g. user details).
-Each row is `flex items-baseline gap-4 px-6 py-3`; the `<dt>` is
-`w-36 shrink-0 text-sm font-medium text-muted-foreground`; the `<dd>`
-is `text-sm`. Monospace (`font-mono`) for IDs and NIC numbers.
+`LRow` rows inside a `Card` are the canonical way to display record
+fields (user details, document metadata, agricultural batch detail).
+Lead icon (40 px tile, paper-3 background) + title + meta + optional
+trail. Don't use `<dl>` for record displays in v0.2 — `LRow` is the
+dignified pattern.
 
-== Error and empty states
+== Trust / citation
+
+Civic claims that come from a government source render as a `Trust`
+component (when added — currently in the design-system catalogue but
+not yet a primitive in this codebase). Until it lands, follow the
+markup directly: `.trust` wrapper + `.trust-mark` (32 px primary
+circle with shield icon) + title + body + `.trust-cite` (mono caption
+prefixed with `↳`). Cite the source URL or the in-platform
+audit-trail reference, never an unverifiable claim.
+
+== Receipt
+
+Confirmation numbers and submission receipts use the `Receipt`
+component (CSS class `.receipt`). Mono font, dashed top/bottom
+borders, the receipt-num as the centred final line. The user can
+screenshot it; SMS fallback delivers the same number.
+
+== SMS / USSD fallback
+
+When bandwidth dies, surfaces fall back to SMS over the Veḷi-controlled
+shortcode (Ideamart). The `SMS` component shows the message as it
+will appear on a feature phone. Mono everywhere; preserves whitespace.
+
+== Form inputs
+
+Every input is wrapped in a `Field` primitive: label above (never
+placeholder-only), `.field-input` for the control (full-width on
+mobile, 48 px tall, 1.5 px border), helper text below in `.field-help`,
+errors in `.field-error` (with the auto-rendered `!` icon). Required
+fields show a red `*` in the label.
+
+== Empty + error states
 
 Localised, never English-only. Use a `Card` with centred copy:
 
@@ -245,48 +295,35 @@ Localised, never English-only. Use a `Card` with centred copy:
   <CardContent>{m.user_not_found()}</CardContent>
 </Card>")
 
-Server errors get `border-destructive/30 bg-destructive/10` plus a
+Server errors use `border-alert/30 bg-alert-soft text-ink` plus a
 single line of guidance ("please try again later" — never a stack
-trace). Never expose raw backend error envelopes to the user; log them.
-
-== Form inputs
-
-All inputs are full-width on mobile, 44 px tall, with a label above
-(never placeholder-only — accessibility regression on iOS Safari and
-some Tamil IMEs). Validation errors surface below the input in
-`text-sm text-destructive`.
+trace). Never expose raw backend error envelopes to the user; log
+them.
 
 = Accessibility
 
-- *Touch targets:* 44 px × 44 px minimum. Buttons at `size="md"`
-  satisfy this; never go below `size="sm"` for primary actions.
-- *Focus rings:* never disable. The `ring-ring` token gives a 2 px
-  halo at 2 px offset; tab order must be logical.
-- *Contrast:* zinc OKLCH already meets AA at body sizes; verify
-  manually for tier-coloured backgrounds.
+- *Touch targets:* 44 px minimum. `Button size="md"` is 48 px.
+- *Focus rings:* never disable. The `--ring` token is `--primary`; a
+  2 px ring at 2 px offset is the default focus halo.
+- *Contrast:* civic palette body sizes meet AA. Tier badges and the
+  saffron offline pill have been verified against the relevant
+  backgrounds; consult the colour table when adding new combinations.
 - *aria-label:* every interactive control needs one, *and it must be
-  localised through Paraglide*. Never hard-code English `aria-label`
-  strings.
-- *Language tag:* the `<html lang>` is set by Paraglide via the
-  `%paraglide.lang%` placeholder; do not override it manually.
-- *Right-to-left:* not currently in scope. Tamil and Sinhala are LTR.
+  localised through Paraglide*. Never hard-code English.
+- *Language tag:* `<html lang>` is set by Paraglide via the
+  `%paraglide.lang%` placeholder. Don't override.
 
-= Internationalisation rules
+= Internationalisation
 
 - *Tamil first.* Author the Tamil string before any other language.
-  Never translate Tamil from English in user-facing copy.
-- *Register.* Northern Province colloquial (Jaffna). Avoid literary
-  Tamil. Have a Northern Province native speaker review new strings
-  before merge.
-- *Catalogue layout.* All keys in `frontend/messages/{en,ta,si}.json`,
-  one key per UI string. No string concatenation across keys —
-  pluralisation and parameter substitution use Paraglide's parameter
-  syntax.
-- *Numerals.* Use European numerals (0–9) by default; the platform
-  shows Tamil numerals only when explicitly requested by content.
-- *Quoting.* Tamil uses straight quotes. Sinhala uses standard
-  punctuation. English may use curly quotes in long-form copy but
-  not in UI labels.
+  Never machine-translate Tamil from English in user-facing copy.
+- *Register.* Northern Province colloquial (Jaffna). Native review
+  is in the loop and authoritative.
+- *Catalogue.* All keys in `frontend/messages/{en,ta,si}.json`, one
+  key per UI string. Pluralisation and parameter substitution use
+  Paraglide's parameter syntax — no string concatenation across keys.
+- *Numerals.* Use European numerals (0–9) by default; Tamil numerals
+  only when explicitly requested by content.
 
 = Mobile-first defaults
 
@@ -294,39 +331,36 @@ some Tamil IMEs). Validation errors surface below the input in
   `lg` 1024 px. The smartphone surface targets `< sm`; widen up
   from there.
 - Never assume hover. Every interactive state must work on touch.
-- Service worker caches the active session; pages should render
-  meaningful content with cached data plus a small banner when
-  offline. Avoid spinner-only offline states.
-- Capacitor Android wrap: status-bar colour is `bg-background`; the
-  splash screen is hidden on layout mount.
+- Service worker caches the active session; pages render meaningful
+  content with cached data plus a small banner when offline. Avoid
+  spinner-only offline states.
+- Capacitor Android wrap: status-bar colour is `bg-paper-2`; splash
+  hidden on layout mount.
 
 = Code conventions
 
 - *Svelte 5 runes only.* `$state`, `$derived`, `$effect`, `$props`.
-  No legacy `writable` or `readable` stores.
-- *Server-only code* lives in `src/lib/server/`. Never import from
-  `$lib/server/` inside a `.svelte` component.
-- *API calls* go through `+page.server.ts` `load()` using the typed
-  client at `$lib/api`. Never `fetch()` the backend directly from a
-  component.
-- *Primitive imports.* Reach for `$lib/components/ui/<name>.svelte`
-  before writing new Tailwind classes for buttons, cards, badges, or
-  status strips.
+- *Server-only* code lives in `src/lib/server/`. Never import in a
+  `.svelte` component.
+- *API calls* go through `+page.server.ts` `load()` (or form actions),
+  using the typed client at `$lib/api`. Never direct browser fetch.
+- *Primitive imports.* Reach for `$lib/components/ui/<Name>.svelte`
+  before writing raw Tailwind for buttons, cards, badges, list rows,
+  tier badges, status strips, fields, locale switchers, segmented
+  controls, progress bars, offline pills, or icons.
 - *cn() helper.* Compose classes with `cn(...)` from `$lib/utils`.
-  Never string-concatenate Tailwind classes.
-- *Props.* Type props with TypeScript `interface`s; default values
-  set via destructuring at the `$props()` site. Forward `class` and
-  `ref` through `WithoutChildrenOrChild<T>` from `$lib/utils` when
-  wrapping native elements.
+- *Props.* Type with TypeScript `interface`s; default values via
+  destructuring at the `$props()` site.
 - *No inline `<style>`* unless scoped and unavoidable. Tailwind
-  utilities first; CSS custom properties when a token is needed.
+  utilities first; CSS classes from `app.css` for composed components;
+  CSS variables when a token is needed.
 
 = Boundaries
 
-This design system is for the smartphone surface (PWA + Capacitor
+This design system covers the smartphone surface (PWA + Capacitor
 Android wrap). It does *not* cover:
 
-- The IVR / USSD / SMS surfaces (governed by Tamil voice prompt
+- The IVR / USSD / SMS surfaces (governed by Tamil voice-prompt
   authoring rules, see strategic plan §Phase 0 architecture).
 - Internal admin or back-office tooling (out of scope for v1.x).
 - Print or PDF artefacts (deed-ready bundles in Phase 2 use a
