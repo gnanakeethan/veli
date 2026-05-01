@@ -23,10 +23,13 @@ const (
 
 // User is the phone-anchored identity shared across all three
 // product lines. NIC linkage is optional and added during
-// authority-attested flows.
+// authority-attested flows. Email is optional too, used by the
+// admin auth path (Google Sign-in) where staff users may not
+// yet have a phone in the system.
 type User struct {
 	ID          string    `json:"id"`
 	Phone       string    `json:"phone"`
+	Email       string    `json:"email,omitempty"`
 	NICNumber   string    `json:"nic_number,omitempty"`
 	DisplayName string    `json:"display_name"`
 	Locale      string    `json:"locale"`

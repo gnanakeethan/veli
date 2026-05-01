@@ -68,6 +68,9 @@ func (r *bobUsersRepository) Create(ctx context.Context, user *domain.User) erro
 	if user.NICNumber != "" {
 		setter.NicNumber = omitnull.From(user.NICNumber)
 	}
+	if user.Email != "" {
+		setter.Email = omitnull.From(user.Email)
+	}
 
 	inserted, err := models.Users.Insert(setter).One(ctx, r.exec)
 	if err != nil {
@@ -107,8 +110,9 @@ func (r *bobUsersRepository) List(ctx context.Context, limit, offset int) ([]dom
 }
 
 // modelToDomain projects a Bob-generated *models.User onto the
-// repository-internal domain.User. The nullable nic_number column
-// collapses from null.Val[string] to a plain string ("" when absent).
+// repository-internal domain.User. Nullable columns (nic_number,
+// email) collapse from null.Val[string] to a plain string ("" when
+// absent).
 func modelToDomain(u *models.User) domain.User {
 	out := domain.User{
 		ID:          u.ID,
@@ -120,6 +124,9 @@ func modelToDomain(u *models.User) domain.User {
 	}
 	if u.NicNumber.IsValue() {
 		out.NICNumber = u.NicNumber.MustGet()
+	}
+	if u.Email.IsValue() {
+		out.Email = u.Email.MustGet()
 	}
 	return out
 }
