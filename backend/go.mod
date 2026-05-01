@@ -9,6 +9,7 @@ require (
 	github.com/jackc/pgx/v5 v5.9.2
 	github.com/jaswdr/faker/v2 v2.9.1
 	github.com/lib/pq v1.10.9
+	github.com/oklog/ulid/v2 v2.1.1
 	github.com/pressly/goose/v3 v3.27.1
 	github.com/stephenafamo/bob v0.43.0
 	github.com/stephenafamo/scan v0.7.0

@@ -7,19 +7,35 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"regexp"
+	"strings"
+	"unicode/utf8"
+
+	"github.com/oklog/ulid/v2"
 
 	"github.com/cloudparallax/veli/internal/domain"
 	"github.com/cloudparallax/veli/internal/repository"
 )
 
-// ErrInvalidID is returned when the caller-supplied user ID is not a
-// syntactically valid ULID. It is distinct from ErrUserNotFound: a
-// malformed ID should produce HTTP 400, not 404.
-var ErrInvalidID = errors.New("invalid user id")
+// Sentinel errors. Each maps to a specific HTTP status in the handler;
+// extend the set rather than reusing one for two distinct cases.
+var (
+	ErrInvalidID          = errors.New("invalid user id")
+	ErrInvalidPhone       = errors.New("invalid phone")
+	ErrInvalidLocale      = errors.New("invalid locale")
+	ErrInvalidDisplayName = errors.New("invalid display_name")
+	ErrUserNotFound       = repository.ErrUserNotFound
+)
 
-// ErrUserNotFound is re-exported from the repository so handlers
-// import a single package boundary.
-var ErrUserNotFound = repository.ErrUserNotFound
+// CreateUserInput is the validated set of fields a caller may supply
+// to register a new user. ULID generation, timestamps, and the
+// repository call are owned by the service.
+type CreateUserInput struct {
+	Phone       string
+	DisplayName string
+	Locale      string
+	NICNumber   string // empty means "not provided"; stored as NULL
+}
 
 // UsersService coordinates user-related business logic.
 type UsersService struct {
@@ -47,11 +63,58 @@ func (s *UsersService) GetByID(ctx context.Context, id string) (domain.User, err
 	return u, nil
 }
 
+// Create validates the input, mints a ULID, and persists a new user.
+// On success the returned domain.User has the ID, timestamps, and
+// trimmed display_name and nic_number applied.
+func (s *UsersService) Create(ctx context.Context, in CreateUserInput) (domain.User, error) {
+	if !isValidE164(in.Phone) {
+		return domain.User{}, ErrInvalidPhone
+	}
+	if !isSupportedLocale(in.Locale) {
+		return domain.User{}, ErrInvalidLocale
+	}
+	displayName := strings.TrimSpace(in.DisplayName)
+	if displayName == "" || utf8.RuneCountInString(displayName) > 200 {
+		return domain.User{}, ErrInvalidDisplayName
+	}
+
+	user := domain.User{
+		ID:          ulid.Make().String(),
+		Phone:       in.Phone,
+		DisplayName: displayName,
+		Locale:      in.Locale,
+		NICNumber:   strings.TrimSpace(in.NICNumber),
+	}
+
+	if err := s.repo.Create(ctx, &user); err != nil {
+		return domain.User{}, fmt.Errorf("create user: %w", err)
+	}
+	return user, nil
+}
+
+// e164Pattern is the surface check we apply to phone numbers at the
+// service boundary: a leading '+' (no country prefix omission), a
+// leading non-zero digit, then 6–14 more digits, total 7–15 digits.
+// Mirrors ITU-T E.164 max length of 15 digits including country code.
+var e164Pattern = regexp.MustCompile(`^\+[1-9]\d{6,14}$`)
+
+func isValidE164(s string) bool {
+	return e164Pattern.MatchString(s)
+}
+
+func isSupportedLocale(s string) bool {
+	switch s {
+	case "en", "ta", "si":
+		return true
+	default:
+		return false
+	}
+}
+
 // isWellFormedULID surface-checks the canonical ULID encoding: 26
 // characters in Crockford base32 (digits plus uppercase letters minus
-// I, L, O, U). It does not parse the timestamp half or assert
-// uniqueness — generation will eventually use oklog/ulid; this is the
-// defensive validator at the service boundary.
+// I, L, O, U). Generation uses oklog/ulid; this validator stays
+// because we receive IDs from URL params at the handler boundary.
 func isWellFormedULID(id string) bool {
 	if len(id) != 26 {
 		return false

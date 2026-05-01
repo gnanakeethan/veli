@@ -84,6 +84,7 @@ func main() {
 
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Get("/hello", handler.Hello)
+		r.Post("/users", usersHandler.Create)
 		r.Get("/users/{id}", usersHandler.Get)
 	})
 

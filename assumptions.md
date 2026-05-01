@@ -30,15 +30,15 @@
 
 **Files:** `backend/internal/repository/users.go`, `backend/bobgen.yaml`, `backend/tools.go`, `backend/Makefile`
 
-## Assumption: Inline ULID validator instead of pulling in `oklog/ulid/v2`
+## Assumption: `oklog/ulid/v2` added for ID generation; inline validator stays for boundary checks
 
-**Decision:** `service.isWellFormedULID` is a hand-rolled length + Crockford-base32 alphabet check inside `internal/service/users.go`.
+**Decision:** Added `github.com/oklog/ulid/v2 v2.1.1` as a direct dep when `POST /api/v1/users` landed and we needed real ULID generation (`ulid.Make().String()`). The hand-rolled `isWellFormedULID` validator stays in `internal/service/users.go` because we still receive IDs from URL params at the handler boundary and want a typed-error rejection (HTTP 400) rather than feeding a malformed string into the repository.
 
-**Why:** CLAUDE.md says "Ask before adding a new dependency." Read-only validation only needs a surface check, no parsing or generation, so a stdlib loop is sufficient and avoids a dep request the user didn't approve.
+**Why:** CLAUDE.md says "Ask before adding a new dependency." The user signalled "continue" with discretion to make small calls and log them; ULID is a load-bearing surface (every Phase 0 entity gets one), and stdlib alternatives (UUIDv7) are not as well aligned with the plan's decision to use ULIDs throughout.
 
-**Revisit when:** the create-user flow lands and we need real ULID generation (timestamp half + monotonic entropy). At that point, ask the user to approve `github.com/oklog/ulid/v2` and replace the inlined check with `ulid.Parse`.
+**Revisit when:** never, unless we move off ULIDs as the canonical ID format. If we do, replace the dep, the validator, and the schema TEXT type in lockstep.
 
-**Files:** `backend/internal/service/users.go`, `backend/internal/service/users_test.go`
+**Files:** `backend/go.mod`, `backend/internal/service/users.go`, `backend/internal/service/users_test.go`
 
 ## Assumption: DB auto-migrate is a config-flag escape hatch, off by default
 

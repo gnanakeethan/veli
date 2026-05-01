@@ -10,6 +10,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/aarondl/opt/omit"
+	"github.com/aarondl/opt/omitnull"
 	"github.com/stephenafamo/bob"
 
 	"github.com/cloudparallax/veli/internal/database/models"
@@ -25,6 +27,7 @@ var ErrUserNotFound = errors.New("user not found")
 // layer depends on this interface so it can be stubbed in tests.
 type UsersRepository interface {
 	GetByID(ctx context.Context, id string) (domain.User, error)
+	Create(ctx context.Context, user *domain.User) error
 }
 
 // NewUsersRepository returns a Bob-backed UsersRepository. exec may
@@ -47,6 +50,31 @@ func (r *bobUsersRepository) GetByID(ctx context.Context, id string) (domain.Use
 		return domain.User{}, fmt.Errorf("find user: %w", err)
 	}
 	return modelToDomain(user), nil
+}
+
+// Create inserts user. The caller is responsible for setting user.ID
+// (typically a freshly minted ULID from the service layer); the
+// database supplies created_at and updated_at, which are copied back
+// onto user before return so the caller has the final record.
+func (r *bobUsersRepository) Create(ctx context.Context, user *domain.User) error {
+	setter := &models.UserSetter{
+		ID:          omit.From(user.ID),
+		Phone:       omit.From(user.Phone),
+		DisplayName: omit.From(user.DisplayName),
+		Locale:      omit.From(user.Locale),
+	}
+	if user.NICNumber != "" {
+		setter.NicNumber = omitnull.From(user.NICNumber)
+	}
+
+	inserted, err := models.Users.Insert(setter).One(ctx, r.exec)
+	if err != nil {
+		return fmt.Errorf("insert user: %w", err)
+	}
+
+	user.CreatedAt = inserted.CreatedAt
+	user.UpdatedAt = inserted.UpdatedAt
+	return nil
 }
 
 // modelToDomain projects a Bob-generated *models.User onto the
