@@ -22,5 +22,11 @@
 	"user_field_nic": "தேசிய அடையாள அட்டை",
 	"user_field_locale": "மொழி",
 	"user_field_created_at": "உருவாக்கப்பட்ட நேரம்",
-	"phase_label": "நிலை {phase}"
+	"phase_label": "நிலை {phase}",
+	"tier_self_asserted_ta": "சுய அறிவிப்பு",
+	"tier_self_asserted_en": "Self-asserted",
+	"tier_community_corroborated_ta": "சமூக சாட்சியம்",
+	"tier_community_corroborated_en": "Community-corroborated",
+	"tier_authority_attested_ta": "அதிகாரப்பூர்வ உறுதி",
+	"tier_authority_attested_en": "Authority-attested"
 }

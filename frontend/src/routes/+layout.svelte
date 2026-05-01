@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { onMount } from 'svelte';
-	import LocaleSwitcher from '$lib/components/locale-switcher.svelte';
+	import LocaleSwitcher from '$lib/components/ui/LocaleSwitcher.svelte';
 
 	let { children } = $props();
 

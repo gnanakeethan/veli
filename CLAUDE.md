@@ -15,6 +15,7 @@ The strategic plan is the source of truth. Plan version: **v1.5** (May 2026). Th
 .
 ├── veli_implementation_plan.typ   # Typst entrypoint (preamble + title + #include of section files)
 ├── docs/
+│   ├── design-system.typ          # Frontend design system — canonical reference for UI tokens, primitives, patterns
 │   ├── plan/                      # Per-section plan files; edit these, not the entrypoint
 │   │   ├── _executive_summary.typ
 │   │   ├── 01_strategic_context.typ
@@ -41,8 +42,17 @@ The strategic plan is the source of truth. Plan version: **v1.5** (May 2026). Th
 │   ├── Makefile, .air.toml, .golangci.yml, tools.go
 │   └── go.mod, go.sum
 └── frontend/                      # SvelteKit 2 + Svelte 5 + Tailwind v4 + Capacitor (Android first)
-    ├── src/                       # routes, lib, hooks, app.css (zinc OKLCH theme)
-    ├── messages/{en,ta,si}.json   # Paraglide i18n catalogs
+    ├── src/
+    │   ├── routes/                # +page, +layout, +server, file-based routing
+    │   ├── lib/
+    │   │   ├── api/               # Typed REST client (fetch-injected, framework-agnostic)
+    │   │   ├── components/ui/     # Design-system primitives — see docs/design-system.typ
+    │   │   ├── server/            # Server-only code; never import from a .svelte component
+    │   │   └── utils.ts           # cn() helper, prop-stripping types
+    │   ├── hooks.ts               # reroute via paraglide deLocalizeUrl
+    │   ├── hooks.server.ts        # paraglideMiddleware (locale resolution)
+    │   └── app.css                # zinc OKLCH theme tokens
+    ├── messages/{en,ta,si}.json   # Paraglide i18n catalogs (Tamil first)
     ├── project.inlang/settings.json
     ├── capacitor.config.ts        # appId lk.cloudparallax.veli
     └── svelte.config.js           # @sveltejs/adapter-node
@@ -90,8 +100,34 @@ The strategic plan is multi-file by design so different topics evolve independen
 - The PWA is built mobile-first for low-end Android (Chrome/WebView). Service worker caches the active session and procedure content for offline use.
 - Tailwind v4 zinc OKLCH theme is in `src/app.css` — use theme tokens (`bg-background`, `text-foreground`, `text-primary`, etc.), not hex colors.
 - Server-only code lives in `src/lib/server/`. Never import from `$lib/server/` in a `.svelte` component.
+- API calls go through `+page.server.ts` `load()` using the typed client at `$lib/api`. Never `fetch()` the backend directly from a `.svelte` component.
 - Run after any Svelte change: `pnpm check && pnpm build`. Paraglide files (`src/lib/paraglide/`) are generated at build — gitignored.
 - **No third-party messaging integration** (no WhatsApp, no Telegram, no Discord). The plan deliberately routes only through the PWA, the Veḷi-controlled IVR/USSD/SMS surfaces, and the trained-helper telephone hotline.
+
+## Frontend design system
+
+The canonical reference is `docs/design-system.typ` — read it before adding any UI. It defines the colour, typography, spacing, and radius tokens, the component catalogue, the page-shell pattern, the three-tier verification visual contract (with normative dual-language tier labels), the accessibility checklist, and the i18n authoring rules.
+
+The implementation lives at `frontend/src/lib/components/ui/`. Available primitives:
+
+| Primitive | Purpose |
+|---|---|
+| `Button` | Variants `primary`/`secondary`/`ghost`/`destructive`; sizes `sm`/`md`/`lg`. 44 px min touch target at `md`. |
+| `Card` + `CardHeader` + `CardContent` + `CardFooter` | Composable surface. The phase cards on the landing page are the canonical example. |
+| `Badge` | Inline pill for short generic state. |
+| `TierBadge` | Specialised pill for the three verification tiers — always renders **both** EN and TA labels, with visual hierarchy reflecting legal effect. Never substitute or invent tiers. |
+| `StatusStrip` | Thin bar reporting backend reachability + phase number. |
+| `LocaleSwitcher` | Three-button group calling Paraglide `setLocale`. Mounted in the layout. |
+
+Rules of engagement:
+
+- **Reach for the primitive first.** Before writing `class="rounded-lg border bg-card p-6 ..."` for a card-shaped thing, use `<Card>`. Same for buttons, badges, status indicators.
+- **Compose classes with `cn(...)` from `$lib/utils`** — never string-concatenate Tailwind classes.
+- **Tier labels are normative.** Use `<TierBadge tier="self_asserted" />` etc. with the exact tier values; do not paraphrase the labels rendered inside.
+- **Update `docs/design-system.typ` when the system changes** — the doc is the source of truth, the components implement it. If they drift, the doc wins and the components get fixed.
+- **Tamil-first authoring** for every string (including `aria-label`); add to all three of `messages/{en,ta,si}.json`.
+
+Compile the doc with `typst compile docs/design-system.typ` (output: `docs/design-system.pdf`).
 
 ## Three-tier verification model
 
@@ -136,6 +172,7 @@ The plan's deliverables list (`docs/plan/02_phase0_foundations.typ`) is the cano
 - Treat `docs/plan/11_phase_gates.typ` as binding: the gate criteria are go/no-go decisions for each phase boundary, and the two compression options (two-product variant, sequenced-only variant) are pre-approved fallbacks. Choosing one of them at a gate is a normal outcome, not a failure mode.
 - Wrap Go errors with context; never silence them.
 - Keep Tamil colloquial Jaffna register for user-facing copy.
+- For any new frontend UI, consult `docs/design-system.typ` and the primitives at `frontend/src/lib/components/ui/` before writing raw Tailwind. Add to the design system rather than around it.
 
 ## What Claude should never do
 

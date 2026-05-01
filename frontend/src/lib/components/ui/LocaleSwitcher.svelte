@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getLocale, setLocale, locales } from '$lib/paraglide/runtime';
+	import Button from './Button.svelte';
 
 	const labels: Record<string, string> = {
 		ta: 'தமிழ்',
@@ -12,17 +13,13 @@
 
 <nav aria-label="Language selector" class="flex gap-1">
 	{#each locales as locale (locale)}
-		<button
-			type="button"
+		<Button
+			variant={currentLocale === locale ? 'primary' : 'secondary'}
+			size="sm"
 			onclick={() => setLocale(locale)}
-			aria-pressed={currentLocale === locale}
-			class="rounded px-2.5 py-1.5 text-xs font-medium transition-colors"
-			class:bg-primary={currentLocale === locale}
-			class:text-primary-foreground={currentLocale === locale}
-			class:bg-secondary={currentLocale !== locale}
-			class:text-secondary-foreground={currentLocale !== locale}
+			aria-label={labels[locale] ?? locale}
 		>
 			{labels[locale] ?? locale}
-		</button>
+		</Button>
 	{/each}
 </nav>
