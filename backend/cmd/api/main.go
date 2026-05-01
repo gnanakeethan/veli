@@ -71,6 +71,30 @@ func main() {
 	rbacSvc := service.NewRBACService(rolesRepo)
 	adminHandler := &handler.AdminHandler{Users: usersSvc, RBAC: rbacSvc, Logger: logger}
 
+	externalRepo := repository.NewExternalIdentitiesRepository(bobDB)
+	authSvc, err := service.NewAuthService(rootCtx, service.GoogleAuthConfig{
+		ClientID:     cfg.Auth.GoogleClientID,
+		ClientSecret: cfg.Auth.GoogleClientSecret,
+		RedirectURL:  cfg.Auth.GoogleRedirectURL,
+	}, externalRepo)
+	if err != nil {
+		logger.Fatal("init auth service", zap.Error(err))
+	}
+	if authSvc != nil {
+		logger.Info("google sign-in configured",
+			zap.String("redirect_url", cfg.Auth.GoogleRedirectURL))
+	} else {
+		logger.Info("google sign-in disabled (no VELI_AUTH_GOOGLE_CLIENT_ID)")
+	}
+	authHandler := &handler.AuthHandler{
+		Auth:          authSvc,
+		RBAC:          rbacSvc,
+		Users:         usersSvc,
+		SessionSecret: []byte(cfg.Auth.SessionSecret),
+		FrontendURL:   cfg.Auth.FrontendURL,
+		Logger:        logger,
+	}
+
 	r := chi.NewRouter()
 	r.Use(chimw.RequestID)
 	r.Use(chimw.Recoverer)
@@ -83,6 +107,9 @@ func main() {
 		MaxAge:           300,
 	}))
 
+	if len(cfg.Auth.SessionSecret) > 0 {
+		r.Use(velimw.SessionAuth([]byte(cfg.Auth.SessionSecret)))
+	}
 	if cfg.Auth.DevMode {
 		logger.Warn("dev-mode auth enabled — X-User-ID header is trusted; never run this in production")
 		r.Use(velimw.AuthDevHeader)
@@ -95,6 +122,13 @@ func main() {
 		r.Get("/hello", handler.Hello)
 		r.Post("/users", usersHandler.Create)
 		r.Get("/users/{id}", usersHandler.Get)
+
+		r.Route("/auth", func(r chi.Router) {
+			r.Get("/google/start", authHandler.GoogleStart)
+			r.Get("/google/callback", authHandler.GoogleCallback)
+			r.Get("/me", authHandler.Me)
+			r.Post("/logout", authHandler.Logout)
+		})
 
 		r.Route("/admin", func(r chi.Router) {
 			r.Get("/me", adminHandler.Me)

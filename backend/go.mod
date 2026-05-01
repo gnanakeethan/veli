@@ -4,6 +4,7 @@ go 1.26.2
 
 require (
 	github.com/aarondl/opt v0.0.0-20250607033636-982744e1bd65
+	github.com/coreos/go-oidc/v3 v3.18.0
 	github.com/go-chi/chi/v5 v5.2.5
 	github.com/go-chi/cors v1.2.2
 	github.com/jackc/pgx/v5 v5.9.2
@@ -14,6 +15,7 @@ require (
 	github.com/stephenafamo/bob v0.43.0
 	github.com/stephenafamo/scan v0.7.0
 	go.uber.org/zap v1.28.0
+	golang.org/x/oauth2 v0.36.0
 	golang.org/x/vuln v1.3.0
 	gopkg.in/yaml.v3 v3.0.1
 	honnef.co/go/tools v0.7.0
@@ -39,6 +41,7 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-faster/city v1.0.1 // indirect
 	github.com/go-faster/errors v0.7.1 // indirect
+	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-sql-driver/mysql v1.9.3 // indirect
 	github.com/go-viper/mapstructure/v2 v2.0.0-alpha.1 // indirect
 	github.com/gofrs/uuid v4.4.0+incompatible // indirect

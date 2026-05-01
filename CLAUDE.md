@@ -138,6 +138,42 @@ Rules of engagement:
 
 Compile the doc with `typst compile docs/design-system.typ` (output: `docs/design-system.pdf`).
 
+## Authentication and authorization
+
+- *End users* are **phone-anchored** per the plan §Phase 0 architecture and the Identity Recovery Protocol. Phone-OTP registration is the eventual path; until then, registration is via `POST /api/v1/users` (no auth currently — to be tightened with phone OTP).
+- *Admins (super_admin, manager)* authenticate via **Google Sign-in (OIDC)**. The flow is `GET /api/v1/auth/google/start` → Google → `GET /api/v1/auth/google/callback` → signed session cookie (`veli_session`, HMAC-SHA256, 12h TTL). Admins must be pre-provisioned in `users` with their email address; first sign-in links the Google subject to that user via `external_identities`. No auto-create — `ErrAdminNotProvisioned` is returned on unknown emails.
+- *Local dev shim* — `VELI_AUTH_DEVMODE=true` mounts the `AuthDevHeader` middleware which trusts the `X-User-ID` request header. Off by default. Production deploys must keep it off.
+
+The RBAC layer:
+
+| Concept | Tables | Code |
+|---|---|---|
+| Role | `roles` (seeded: `super_admin`, `manager`, `user`) | `internal/domain/rbac.go`, `internal/repository/roles.go` |
+| Permission | `permissions` (seeded: `users:list/read/write/delete`, `roles:list/assign/write`, `documents:read/moderate`, `audit:read`) | same |
+| Role grant | `role_permissions` (M:N), seeded at migration time | same |
+| User assignment | `user_roles` (M:N), `granted_by` for audit | same |
+| Service | `RBACService.RequirePermission`, `AssignRoleByCode`, `RevokeRoleByCode`, `ListUserRoles` | `internal/service/rbac.go` |
+| Middleware | `AuthDevHeader` (dev), `SessionAuth` (prod), `RequirePermission(code)` (gate) | `internal/middleware/rbac.go`, `session.go` |
+
+Admin routes live under `/api/v1/admin/*` and each is gated by `RequirePermission` for the relevant code:
+
+| Route | Permission |
+|---|---|
+| `GET /admin/me` | none (any authenticated user) |
+| `GET /admin/users` | `users:list` |
+| `GET /admin/users/{id}/roles` | `roles:list` |
+| `POST /admin/users/{id}/roles` | `roles:assign` |
+| `DELETE /admin/users/{id}/roles/{code}` | `roles:assign` |
+
+Bootstrap a super admin manually until the admin UI exists:
+
+```sql
+INSERT INTO users (id, phone, email, display_name, locale)
+VALUES ('<ulid>', '<phone>', '<google email>', '<name>', 'ta');
+INSERT INTO user_roles (user_id, role_id)
+VALUES ('<ulid>', '01KQHE341VR4YK4C5CERP3P11Y');  -- super_admin
+```
+
 ## Three-tier verification model
 
 Every document, statement, or piece of evidence in the platform carries an explicit tier (per Phase 0 architecture spec, Phase 2 verification model):

@@ -42,6 +42,15 @@ type AuthConfig struct {
 	// DevMode trusts the X-User-ID header as the request actor.
 	// Local development only; never enable in any deploy.
 	DevMode bool `yaml:"dev_mode"`
+	// SessionSecret signs the session cookie. Must be at least 32
+	// bytes of high-entropy data. Empty disables signed sessions
+	// (Google sign-in won't work).
+	SessionSecret string `yaml:"session_secret"`
+	// Google OIDC. Empty ClientID disables the Google sign-in path
+	// entirely; the routes return 503 in that case.
+	GoogleClientID     string `yaml:"google_client_id"`
+	GoogleClientSecret string `yaml:"google_client_secret"`
+	GoogleRedirectURL  string `yaml:"google_redirect_url"`
 }
 
 type ObservabilityConfig struct {
@@ -116,6 +125,18 @@ func applyEnvOverrides(cfg *Config) {
 	}
 	if v := os.Getenv("VELI_AUTH_DEVMODE"); v != "" {
 		cfg.Auth.DevMode = parseBool(v)
+	}
+	if v := os.Getenv("VELI_AUTH_SESSION_SECRET"); v != "" {
+		cfg.Auth.SessionSecret = v
+	}
+	if v := os.Getenv("VELI_AUTH_GOOGLE_CLIENT_ID"); v != "" {
+		cfg.Auth.GoogleClientID = v
+	}
+	if v := os.Getenv("VELI_AUTH_GOOGLE_CLIENT_SECRET"); v != "" {
+		cfg.Auth.GoogleClientSecret = v
+	}
+	if v := os.Getenv("VELI_AUTH_GOOGLE_REDIRECT_URL"); v != "" {
+		cfg.Auth.GoogleRedirectURL = v
 	}
 	if v := os.Getenv("VELI_LOG_LEVEL"); v != "" {
 		cfg.Observability.LogLevel = v

@@ -142,13 +142,23 @@
 
 ## Assumption: Google Sign-in is for admin auth only; end users stay phone-anchored
 
-**Decision:** Google OIDC is being wired (in flight as of 2026-05-01) as the auth method for super_admin and manager accounts — Cloud Parallax team members who already have Google Workspace identities. End users (Northern Province households) remain phone-anchored per the plan §Phase 0 architecture and the Identity Recovery Protocol; they will register via phone OTP when that flow is built.
+**Decision:** Google OIDC is the auth method for `super_admin` and `manager` accounts — Cloud Parallax team members who already have Google Workspace identities. End users (Northern Province households) remain phone-anchored per the plan §Phase 0 architecture and the Identity Recovery Protocol; they will register via phone OTP when that flow is built. The Google flow refuses to auto-create users; `service.AuthService.HandleCallback` returns `ErrAdminNotProvisioned` when no `users.email` matches the Google account, so an admin must be inserted into the DB (with role grants) before they can sign in.
 
-**Why:** The user asked for Google Sign-in, and it's a sensible separation: admins use Google because they already have it; end users can't be assumed to have Google accounts (the audience is rural Northern Province on mid-range Android, often without a Google account at all). CLAUDE.md's "Suggest WhatsApp/Telegram/Signal" exclusion is about *messaging* services; Google as an identity provider for staff is not the same constraint, but it does send admin emails to Google so the PDPA controller-processor analysis must cover it before any deploy.
+**Why:** The user asked for Google Sign-in. It's a sensible separation: admins use Google because they already have it; end users can't be assumed to have Google accounts (the audience is rural Northern Province on mid-range Android, often without a Google account at all). CLAUDE.md's "Suggest WhatsApp/Telegram/Signal" exclusion is about *messaging* services; Google as an identity provider for staff is not the same constraint, but it does send admin emails to Google so the PDPA controller-processor analysis must cover it before any deploy.
 
 **Revisit when:** before Phase 1 launch — confirm the controller-processor agreement with Google (or accept that admin email is in-scope for PDPA). Also revisit if rural users surprise us by all having Google accounts: at that point we could open Google Sign-in to a wider audience as a *secondary* path (phone still primary).
 
-**Files:** `backend/internal/service/auth.go` (planned), `backend/assets/migrations/00003_phase0_admin_auth.sql` (planned), `backend/internal/config/config.go` (planned env vars).
+**Files:** `backend/internal/service/auth.go`, `backend/internal/handler/auth.go`, `backend/internal/middleware/session.go`, `backend/internal/auth/session.go`, `backend/internal/repository/external_identities.go`, `backend/assets/migrations/00003_phase0_admin_auth.sql`, `backend/internal/config/config.go`.
+
+## Assumption: Session cookies use HMAC-SHA256, not JWT
+
+**Decision:** Session cookies are `base64url(payload).base64url(hmac-sha256(payload))` where payload is `{sub, exp}` JSON. No JWT library, no asymmetric key management. Verification reads `VELI_AUTH_SESSION_SECRET` and rejects on signature mismatch or `exp` past.
+
+**Why:** A session cookie that names exactly one user_id and an expiry doesn't need JWT's complexity (issuer, audience, key id, alg negotiation). Every claim in JWT we'd actually use can be expressed in this two-field payload. If we later need stateful revocation, a sessions table can replace this without changing the cookie format.
+
+**Revisit when:** we need fields beyond user_id (e.g. impersonation chains, scoped tokens), OR we want centralised revocation, OR we add a federated identity provider that issues real JWTs we want to forward. At any of those points, swap to `golang-jwt/jwt/v5`.
+
+**Files:** `backend/internal/auth/session.go`, `backend/internal/middleware/session.go`
 
 ## Assumption: Dev-mode auth is a header trust shim, off by default
 
