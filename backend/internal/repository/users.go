@@ -1,7 +1,7 @@
 // Package repository holds data-access implementations. Repositories
 // take a context and primitive arguments and return domain types (or
-// errors). They never leak pgx-specific types into the service or
-// handler layers.
+// errors). They never leak Bob, pgx, or database/sql types into the
+// service or handler layers.
 package repository
 
 import (
@@ -10,9 +10,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/stephenafamo/bob"
 
+	"github.com/cloudparallax/veli/internal/database/models"
 	"github.com/cloudparallax/veli/internal/domain"
 )
 
@@ -27,43 +27,42 @@ type UsersRepository interface {
 	GetByID(ctx context.Context, id string) (domain.User, error)
 }
 
-// NewUsersRepository returns a Postgres-backed UsersRepository.
-func NewUsersRepository(pool *pgxpool.Pool) UsersRepository {
-	return &pgxUsersRepository{pool: pool}
+// NewUsersRepository returns a Bob-backed UsersRepository. exec may
+// be a connection-pool wrapper or a transaction; both satisfy
+// bob.Executor.
+func NewUsersRepository(exec bob.Executor) UsersRepository {
+	return &bobUsersRepository{exec: exec}
 }
 
-type pgxUsersRepository struct {
-	pool *pgxpool.Pool
+type bobUsersRepository struct {
+	exec bob.Executor
 }
 
-const usersGetByIDQuery = `
-SELECT id, phone, nic_number, display_name, locale, created_at, updated_at
-FROM users
-WHERE id = $1
-`
-
-func (r *pgxUsersRepository) GetByID(ctx context.Context, id string) (domain.User, error) {
-	var (
-		u   domain.User
-		nic sql.NullString
-	)
-	err := r.pool.QueryRow(ctx, usersGetByIDQuery, id).Scan(
-		&u.ID,
-		&u.Phone,
-		&nic,
-		&u.DisplayName,
-		&u.Locale,
-		&u.CreatedAt,
-		&u.UpdatedAt,
-	)
-	if errors.Is(err, pgx.ErrNoRows) {
+func (r *bobUsersRepository) GetByID(ctx context.Context, id string) (domain.User, error) {
+	user, err := models.FindUser(ctx, r.exec, id)
+	if errors.Is(err, sql.ErrNoRows) {
 		return domain.User{}, ErrUserNotFound
 	}
 	if err != nil {
-		return domain.User{}, fmt.Errorf("query user by id: %w", err)
+		return domain.User{}, fmt.Errorf("find user: %w", err)
 	}
-	if nic.Valid {
-		u.NICNumber = nic.String
+	return modelToDomain(user), nil
+}
+
+// modelToDomain projects a Bob-generated *models.User onto the
+// repository-internal domain.User. The nullable nic_number column
+// collapses from null.Val[string] to a plain string ("" when absent).
+func modelToDomain(u *models.User) domain.User {
+	out := domain.User{
+		ID:          u.ID,
+		Phone:       u.Phone,
+		DisplayName: u.DisplayName,
+		Locale:      u.Locale,
+		CreatedAt:   u.CreatedAt,
+		UpdatedAt:   u.UpdatedAt,
 	}
-	return u, nil
+	if u.NicNumber.IsValue() {
+		out.NICNumber = u.NicNumber.MustGet()
+	}
+	return out
 }

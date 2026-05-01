@@ -62,7 +62,8 @@ func main() {
 		}
 	}
 
-	usersRepo := repository.NewUsersRepository(pool)
+	bobDB := db.NewBobDB(pool)
+	usersRepo := repository.NewUsersRepository(bobDB)
 	usersSvc := service.NewUsersService(usersRepo)
 	usersHandler := &handler.UsersHandler{Service: usersSvc, Logger: logger}
 

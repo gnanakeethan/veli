@@ -14,6 +14,8 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
+	"github.com/stephenafamo/bob"
 
 	"github.com/cloudparallax/veli/internal/config"
 )
@@ -49,4 +51,15 @@ func Open(ctx context.Context, cfg config.DatabaseConfig) (*pgxpool.Pool, error)
 	}
 
 	return pool, nil
+}
+
+// NewBobDB wraps the pgx pool in a bob.DB so the generated Bob models
+// can be driven against it. Connections are shared with the pool — no
+// second dial — via pgx's database/sql adapter. The returned bob.DB
+// satisfies bob.Executor and is safe for concurrent use.
+//
+// Repositories take bob.Executor (or the more specific bob.DB) so they
+// can be handed a transaction inside a unit of work.
+func NewBobDB(pool *pgxpool.Pool) bob.DB {
+	return bob.NewDB(stdlib.OpenDBFromPool(pool))
 }
