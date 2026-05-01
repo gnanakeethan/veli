@@ -724,6 +724,81 @@
 	color: #e8dfc5;
 }
 
+/* Phone mockup frame — used for product previews in the design system */
+.phone {
+	display: inline-block;
+	background: #111;
+	border-radius: 40px;
+	padding: 10px;
+	box-shadow: 0 0 0 2px #2a2a2a, 0 24px 48px rgba(0, 0, 0, 0.32);
+	width: 320px;
+}
+.phone-status {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 4px 16px 2px;
+	font-family: var(--f-mono);
+	font-size: 11px;
+	color: #e0e0e0;
+	letter-spacing: 0.04em;
+}
+.phone-app {
+	background: var(--paper-2);
+	border-radius: 30px;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	min-height: 560px;
+}
+.phone-appbar {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px 16px;
+	background: var(--paper);
+	border-bottom: 1px solid var(--rule);
+	flex-shrink: 0;
+}
+.phone-appbar-title {
+	flex: 1;
+	font-weight: 600;
+	font-size: 16px;
+	color: var(--ink);
+	font-family: var(--f-tamil);
+}
+.phone-screen {
+	flex: 1;
+	overflow-y: auto;
+	background: var(--paper-2);
+}
+.phone-content {
+	padding: var(--d-pad);
+}
+.phone-tabbar {
+	display: flex;
+	background: var(--paper);
+	border-top: 1px solid var(--rule);
+	flex-shrink: 0;
+}
+.phone-tab {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 3px;
+	padding: 8px 4px;
+	font-family: var(--f-tamil);
+	font-size: 10px;
+	color: var(--ink-3);
+	cursor: pointer;
+	min-height: 52px;
+}
+.phone-tab.active {
+	color: var(--primary);
+}
+
 /* Offline pill */
 .offline-pill {
 	display: inline-flex;

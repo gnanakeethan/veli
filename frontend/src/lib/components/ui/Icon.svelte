@@ -22,6 +22,8 @@
 	import Check from '@lucide/svelte/icons/check'
 	import Phone from '@lucide/svelte/icons/phone'
 	import IdCard from '@lucide/svelte/icons/id-card'
+	import ShieldCheck from '@lucide/svelte/icons/shield-check'
+	import ChevronLeft from '@lucide/svelte/icons/chevron-left'
 
 	interface Props {
 		name: string
@@ -55,7 +57,11 @@
 		chev: ChevronRight,
 		check: Check,
 		phone: Phone,
-		'id-card': IdCard
+		'id-card': IdCard,
+		'shield-check': ShieldCheck,
+		'chevron-left': ChevronLeft,
+		file: FileIcon,
+		'map-pin': MapPin
 	}
 
 	// The component to render — falls back to undefined if name not in map.
