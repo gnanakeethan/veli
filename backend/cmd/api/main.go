@@ -22,6 +22,8 @@ import (
 	"github.com/cloudparallax/veli/internal/db"
 	"github.com/cloudparallax/veli/internal/handler"
 	velimw "github.com/cloudparallax/veli/internal/middleware"
+	"github.com/cloudparallax/veli/internal/repository"
+	"github.com/cloudparallax/veli/internal/service"
 )
 
 func main() {
@@ -60,6 +62,10 @@ func main() {
 		}
 	}
 
+	usersRepo := repository.NewUsersRepository(pool)
+	usersSvc := service.NewUsersService(usersRepo)
+	usersHandler := &handler.UsersHandler{Service: usersSvc, Logger: logger}
+
 	r := chi.NewRouter()
 	r.Use(chimw.RequestID)
 	r.Use(chimw.Recoverer)
@@ -77,6 +83,7 @@ func main() {
 
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Get("/hello", handler.Hello)
+		r.Get("/users/{id}", usersHandler.Get)
 	})
 
 	r.NotFound(func(w http.ResponseWriter, _ *http.Request) {

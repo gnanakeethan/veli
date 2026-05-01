@@ -25,13 +25,13 @@ const (
 // product lines. NIC linkage is optional and added during
 // authority-attested flows.
 type User struct {
-	ID          string
-	Phone       string
-	NICNumber   string
-	DisplayName string
-	Locale      string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID          string    `json:"id"`
+	Phone       string    `json:"phone"`
+	NICNumber   string    `json:"nic_number,omitempty"`
+	DisplayName string    `json:"display_name"`
+	Locale      string    `json:"locale"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 // Document is a per-user artifact (a photo, a scan, a witness
