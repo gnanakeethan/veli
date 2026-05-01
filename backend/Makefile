@@ -98,3 +98,12 @@ migrations/refresh:
 .PHONY: migrations/version
 migrations/version:
 	go run github.com/pressly/goose/v3/cmd/goose@$(GOOSE_VERSION) -dir ./assets/migrations postgres "postgres://${DB_DSN}" version
+
+# ==================================================================================== #
+# CODE GENERATION
+# ==================================================================================== #
+
+## models/regenerate: regenerate Bob ORM models against the live DB schema
+.PHONY: models/regenerate
+models/regenerate:
+	PSQL_DSN="postgres://${DB_DSN}" go run github.com/stephenafamo/bob/gen/bobgen-psql -c ./bobgen.yaml

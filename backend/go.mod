@@ -7,6 +7,7 @@ require (
 	github.com/go-chi/cors v1.2.2
 	github.com/jackc/pgx/v5 v5.9.2
 	github.com/pressly/goose/v3 v3.27.1
+	github.com/stephenafamo/bob v0.43.0
 	go.uber.org/zap v1.28.0
 	golang.org/x/vuln v1.3.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -14,45 +15,77 @@ require (
 )
 
 require (
+	dario.cat/mergo v1.0.2 // indirect
 	filippo.io/edwards25519 v1.2.0 // indirect
 	github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c // indirect
 	github.com/ClickHouse/ch-go v0.71.0 // indirect
 	github.com/ClickHouse/clickhouse-go/v2 v2.45.0 // indirect
+	github.com/Masterminds/goutils v1.1.1 // indirect
+	github.com/Masterminds/semver/v3 v3.3.0 // indirect
+	github.com/Masterminds/sprig/v3 v3.3.0 // indirect
+	github.com/aarondl/opt v0.0.0-20250607033636-982744e1bd65 // indirect
 	github.com/andybalholm/brotli v1.2.1 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/coder/websocket v1.8.14 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/elastic/go-sysinfo v1.15.4 // indirect
 	github.com/elastic/go-windows v1.0.2 // indirect
+	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-faster/city v1.0.1 // indirect
 	github.com/go-faster/errors v0.7.1 // indirect
 	github.com/go-sql-driver/mysql v1.9.3 // indirect
+	github.com/go-viper/mapstructure/v2 v2.0.0-alpha.1 // indirect
+	github.com/gofrs/uuid v4.4.0+incompatible // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
+	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
+	github.com/huandu/xstrings v1.5.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/klauspost/compress v1.18.5 // indirect
+	github.com/knadh/koanf/maps v0.1.1 // indirect
+	github.com/knadh/koanf/parsers/yaml v0.1.0 // indirect
+	github.com/knadh/koanf/providers/confmap v0.1.0 // indirect
+	github.com/knadh/koanf/providers/env v0.1.0 // indirect
+	github.com/knadh/koanf/providers/file v0.1.0 // indirect
+	github.com/knadh/koanf/v2 v2.1.0 // indirect
+	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-isatty v0.0.21 // indirect
 	github.com/mfridman/interpolate v0.0.2 // indirect
 	github.com/mfridman/xflag v0.1.0 // indirect
 	github.com/microsoft/go-mssqldb v1.9.8 // indirect
+	github.com/mitchellh/copystructure v1.2.0 // indirect
+	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/paulmach/orb v0.13.0 // indirect
+	github.com/pganalyze/pg_query_go/v6 v6.1.0 // indirect
 	github.com/pierrec/lz4/v4 v4.1.26 // indirect
 	github.com/prometheus/procfs v0.20.1 // indirect
+	github.com/qdm12/reprint v0.0.0-20200326205758-722754a53494 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/segmentio/asm v1.2.1 // indirect
 	github.com/sethvargo/go-retry v0.3.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
+	github.com/spf13/cast v1.7.0 // indirect
+	github.com/stephenafamo/scan v0.7.0 // indirect
+	github.com/tetratelabs/wazero v1.9.0 // indirect
 	github.com/tursodatabase/libsql-client-go v0.0.0-20251219100830-236aa1ff8acc // indirect
+	github.com/urfave/cli/v2 v2.23.7 // indirect
 	github.com/vertica/vertica-sql-go v1.3.6 // indirect
+	github.com/volatiletech/inflect v0.0.1 // indirect
+	github.com/volatiletech/strmangle v0.0.6 // indirect
+	github.com/wasilibs/go-pgquery v0.0.0-20250409022910-10ac41983c07 // indirect
+	github.com/wasilibs/wazero-helpers v0.0.0-20240620070341-3dff1577cd52 // indirect
+	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	github.com/ydb-platform/ydb-go-genproto v0.0.0-20260311095541-ebbf792c1180 // indirect
 	github.com/ydb-platform/ydb-go-sdk/v3 v3.135.0 // indirect
 	github.com/ziutek/mymysql v1.5.4 // indirect
@@ -78,4 +111,5 @@ require (
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 	modernc.org/sqlite v1.49.1 // indirect
+	mvdan.cc/gofumpt v0.7.0 // indirect
 )

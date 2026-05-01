@@ -1,0 +1,9 @@
+# Bob ORM generated code — regenerate with `make models/regenerate`.
+internal/database/models/
+internal/database/factory/
+internal/database/dbinfo/
+internal/database/dberrors/
+
+# Air hot-reload build artifacts.
+tmp/
+build-errors.log

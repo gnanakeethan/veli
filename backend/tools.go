@@ -7,6 +7,7 @@ package tools
 
 import (
 	_ "github.com/pressly/goose/v3/cmd/goose"
+	_ "github.com/stephenafamo/bob/gen/bobgen-psql"
 	_ "golang.org/x/vuln/cmd/govulncheck"
 	_ "honnef.co/go/tools/cmd/staticcheck"
 )

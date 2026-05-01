@@ -1,0 +1,36 @@
+# Bob ORM code generation for the Veḷi backend.
+#
+# Run via `make models/regenerate` against a live Postgres with the
+# current schema applied. Generated packages land under
+# internal/database/ and are gitignored — never hand-edit them.
+#
+# Driver DSN is supplied via the PSQL_DSN environment variable so we
+# never commit credentials. The Makefile target translates Makefile's
+# DB_DSN (scheme-less) into PSQL_DSN by prepending postgres://.
+
+# Tags applied to every generated struct field. Bob always adds its
+# own internal column metadata; this list is in addition to that.
+# Empty for now — domain types in internal/domain handle JSON shape.
+tags: []
+
+# Plugin layout. Each plugin owns a sibling subdirectory under
+# internal/database/. Disabling a plugin clears its target dir on
+# next generate and skips emission.
+plugins:
+  dbinfo:
+    destination: internal/database/dbinfo
+    pkgname: dbinfo
+  models:
+    destination: internal/database/models
+    pkgname: models
+  factory:
+    destination: internal/database/factory
+    pkgname: factory
+  dberrors:
+    destination: internal/database/dberrors
+    pkgname: dberrors
+  enums:
+    # No Postgres ENUM types in the current schema — the verification
+    # tier is enforced via a CHECK constraint on a TEXT column. Re-enable
+    # and gitignore internal/database/enums when we add real enums.
+    disabled: true
