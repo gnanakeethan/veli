@@ -1,0 +1,24 @@
+# OS
+**/.DS_Store
+
+# Backend
+backend/tmp/
+backend/build-errors.log
+
+# Frontend
+**/node_modules
+frontend/build/
+frontend/.svelte-kit/
+frontend/src/lib/paraglide/
+frontend/.output/
+frontend/test-results/
+**/.env
+**/.env.*
+!**/.env.example
+*.log
+
+# VCS
+.jj/
+
+# Tooling — Claude Code local permissions (per-machine)
+.claude/settings.local.json

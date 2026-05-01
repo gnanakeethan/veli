@@ -1,0 +1,122 @@
+package main
+
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	"flag"
+	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"strings"
+	"syscall"
+
+	"github.com/go-chi/chi/v5"
+	chimw "github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+
+	"github.com/cloudparallax/veli/internal/config"
+	"github.com/cloudparallax/veli/internal/handler"
+	velimw "github.com/cloudparallax/veli/internal/middleware"
+)
+
+func main() {
+	configPath := flag.String("config", "configs/veli.yaml", "path to YAML config file")
+	flag.Parse()
+
+	cfg, err := config.Load(*configPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "fatal: load config: %v\n", err)
+		os.Exit(1)
+	}
+
+	logger, err := buildLogger(cfg.Observability)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "fatal: build logger: %v\n", err)
+		os.Exit(1)
+	}
+	defer func() { _ = logger.Sync() }()
+
+	r := chi.NewRouter()
+	r.Use(chimw.RequestID)
+	r.Use(chimw.Recoverer)
+	r.Use(velimw.RequestLogger(logger))
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   cfg.Auth.AllowedOrigins,
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
+
+	r.Get("/healthz", handler.Health)
+	r.Get("/readyz", handler.Ready)
+
+	r.Route("/api/v1", func(r chi.Router) {
+		r.Get("/hello", handler.Hello)
+	})
+
+	r.NotFound(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		_ = json.NewEncoder(w).Encode(map[string]string{"error": "not found"})
+	})
+
+	server := &http.Server{
+		Addr:         cfg.Server.Listen,
+		Handler:      r,
+		ReadTimeout:  cfg.Server.ReadTimeout,
+		WriteTimeout: cfg.Server.WriteTimeout,
+	}
+
+	go func() {
+		sigCh := make(chan os.Signal, 1)
+		signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+		<-sigCh
+		logger.Info("shutting down")
+		ctx, cancel := context.WithTimeout(context.Background(), cfg.Server.ShutdownTimeout)
+		defer cancel()
+		if err := server.Shutdown(ctx); err != nil {
+			logger.Error("shutdown error", zap.Error(err))
+		}
+	}()
+
+	logger.Info("veli api starting", zap.String("listen", cfg.Server.Listen))
+	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		logger.Error("server error", zap.Error(err))
+		os.Exit(1)
+	}
+	logger.Info("server stopped")
+}
+
+func buildLogger(obs config.ObservabilityConfig) (*zap.Logger, error) {
+	level := zap.NewAtomicLevelAt(parseLevel(obs.LogLevel))
+	var zcfg zap.Config
+	if strings.EqualFold(obs.LogFormat, "json") {
+		zcfg = zap.NewProductionConfig()
+	} else {
+		zcfg = zap.NewDevelopmentConfig()
+	}
+	zcfg.Level = level
+	logger, err := zcfg.Build()
+	if err != nil {
+		return nil, fmt.Errorf("zap build: %w", err)
+	}
+	return logger, nil
+}
+
+func parseLevel(s string) zapcore.Level {
+	switch strings.ToLower(s) {
+	case "debug":
+		return zapcore.DebugLevel
+	case "warn", "warning":
+		return zapcore.WarnLevel
+	case "error":
+		return zapcore.ErrorLevel
+	default:
+		return zapcore.InfoLevel
+	}
+}

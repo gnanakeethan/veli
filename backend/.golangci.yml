@@ -1,0 +1,95 @@
+run:
+  timeout: 5m
+  modules-download-mode: readonly
+
+output:
+  formats:
+    - format: colored-line-number
+  sort-results: true
+
+linters:
+  enable:
+    - gosec
+    - bodyclose
+    - noctx
+    - govet
+    - errcheck
+    - staticcheck
+    - ineffassign
+    - typecheck
+    - unused
+    - gocritic
+    - durationcheck
+    - nilerr
+    - sqlclosecheck
+    - gofmt
+    - goimports
+    - misspell
+    - unconvert
+    - whitespace
+    - prealloc
+    - errorlint
+    - wrapcheck
+
+  disable:
+    - depguard
+    - exhaustive
+    - wsl
+    - nlreturn
+    - gomnd
+    - funlen
+
+linters-settings:
+  gosec:
+    severity: medium
+    confidence: medium
+
+  govet:
+    enable-all: true
+    disable:
+      - fieldalignment
+
+  staticcheck:
+    checks:
+      - "all"
+      - "-ST1000"
+      - "-U1000"
+
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - performance
+      - style
+    disabled-checks:
+      - hugeParam
+      - rangeValCopy
+
+  errorlint:
+    errorf: true
+    errorf-multi: true
+    asserts: true
+    comparison: true
+
+  wrapcheck:
+    ignoreSigs:
+      - .Errorf(
+      - errors.New(
+      - errors.Unwrap(
+      - errors.Join(
+    ignorePackageGlobs:
+      - github.com/cloudparallax/veli/*
+
+  misspell:
+    locale: US
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - wrapcheck
+        - errcheck
+        - gosec
+        - gocritic

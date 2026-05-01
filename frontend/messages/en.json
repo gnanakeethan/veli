@@ -1,0 +1,13 @@
+{
+	"$schema": "https://inlang.com/schema/inlang-message-format",
+	"hello_world": "Hello, {name} from en!",
+	"app_name": "Veḷi",
+	"tagline": "Open. Clear. Civic.",
+	"phase1_title": "Government Service Navigation",
+	"phase1_blurb": "A Tamil-first assistant for everyday government errands — birth certificates, NIC, Samurdhi, pensions. Find the right office, fee, form, and hours without a wasted trip.",
+	"phase2_title": "Land & Property Documentation",
+	"phase2_blurb": "Help households assemble defensible evidence of land ownership — photographs, GPS, witness statements, scanned deeds — versioned and tier-labelled.",
+	"phase3_title": "Agricultural Traceability",
+	"phase3_blurb": "Connect Northern Province producers — Jaffna mango, palmyra, dried fish — to verified buyers with provenance trails from harvest to point of sale.",
+	"footer": "© 2026 Cloud Parallax (Pvt) Ltd. — Jaffna, Sri Lanka."
+}
