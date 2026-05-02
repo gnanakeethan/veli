@@ -39,16 +39,19 @@ type User struct {
 
 // Document is a per-user artifact (a photo, a scan, a witness
 // statement, a notarial PDF) carried in the user's encrypted store.
+// gps_lat / gps_lng are optional pointers — the wire form omits them
+// (omitempty) when the device declined to share location, which is
+// distinct from "shared 0,0" and matters for the chain of custody.
 type Document struct {
-	ID         string
-	UserID     string
-	Kind       string
-	StorageURI string
-	CapturedAt time.Time
-	GPSLat     *float64
-	GPSLng     *float64
-	DeviceID   string
-	CreatedAt  time.Time
+	ID         string    `json:"id"`
+	UserID     string    `json:"user_id"`
+	Kind       string    `json:"kind"`
+	StorageURI string    `json:"storage_uri"`
+	CapturedAt time.Time `json:"captured_at"`
+	GPSLat     *float64  `json:"gps_lat,omitempty"`
+	GPSLng     *float64  `json:"gps_lng,omitempty"`
+	DeviceID   string    `json:"device_id,omitempty"`
+	CreatedAt  time.Time `json:"created_at"`
 }
 
 // Verification attaches a tier and an attesting party to a document.
@@ -56,10 +59,10 @@ type Document struct {
 // upload, community-corroborated later by neighbours, authority-attested
 // when a notary signs off).
 type Verification struct {
-	ID         string
-	DocumentID string
-	Tier       VerificationTier
-	AttesterID string
-	Notes      string
-	VerifiedAt time.Time
+	ID         string           `json:"id"`
+	DocumentID string           `json:"document_id"`
+	Tier       VerificationTier `json:"tier"`
+	AttesterID string           `json:"attester_id"`
+	Notes      string           `json:"notes,omitempty"`
+	VerifiedAt time.Time        `json:"verified_at"`
 }

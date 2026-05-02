@@ -71,6 +71,10 @@ func main() {
 	rbacSvc := service.NewRBACService(rolesRepo)
 	adminHandler := &handler.AdminHandler{Users: usersSvc, RBAC: rbacSvc, Logger: logger}
 
+	docsRepo := repository.NewDocumentsRepository(bobDB)
+	docsSvc := service.NewDocumentsService(docsRepo, usersRepo)
+	docsHandler := &handler.DocumentsHandler{Service: docsSvc, Logger: logger}
+
 	externalRepo := repository.NewExternalIdentitiesRepository(bobDB)
 	authSvc, err := service.NewAuthService(rootCtx, service.GoogleAuthConfig{
 		ClientID:     cfg.Auth.GoogleClientID,
@@ -143,6 +147,13 @@ func main() {
 				Post("/users/{id}/roles", adminHandler.AssignRole)
 			r.With(velimw.RequirePermission(rbacSvc, logger, "roles:assign")).
 				Delete("/users/{id}/roles/{code}", adminHandler.RevokeRole)
+
+			r.With(velimw.RequirePermission(rbacSvc, logger, "documents:read")).
+				Get("/documents", docsHandler.List)
+			r.With(velimw.RequirePermission(rbacSvc, logger, "documents:read")).
+				Get("/documents/{id}", docsHandler.Get)
+			r.With(velimw.RequirePermission(rbacSvc, logger, "documents:moderate")).
+				Post("/documents", docsHandler.Create)
 		})
 	})
 

@@ -7,6 +7,7 @@
 	import CardContent from '$lib/components/ui/CardContent.svelte'
 	import StatusStrip from '$lib/components/ui/StatusStrip.svelte'
 	import Button from '$lib/components/ui/Button.svelte'
+	import VeliMark from '$lib/components/ui/VeliMark.svelte'
 
 	let { data }: { data: PageData } = $props()
 
@@ -22,13 +23,16 @@
 	})
 </script>
 
-<div class="flex min-h-screen flex-col bg-paper-2 text-ink">
+<div class="flex min-h-screen flex-col bg-paper-2 text-ink page">
 	<main class="flex flex-1 flex-col px-6 py-12 max-w-5xl mx-auto w-full">
 
 		<!-- Hero -->
 		<section class="mb-12">
 			<div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:gap-12">
-				<h1 class="hero-mark">வெளி<span class="dot">.</span></h1>
+				<div class="flex flex-col gap-3">
+					<h1 class="m-0"><VeliMark /></h1>
+					<span class="tamil-submark">வெளி<span class="dot">.</span></span>
+				</div>
 				<dl class="grid grid-cols-2 gap-x-8 gap-y-3 pb-2 text-sm">
 					<div>
 						<dt class="text-xs font-mono uppercase tracking-wider text-ink-3">{m.hero_meta_name_label()}</dt>
@@ -110,3 +114,17 @@
 		error={data.backend.error}
 	/>
 </div>
+
+<style>
+	.page :global(.tamil-submark) {
+		font-family: var(--f-tamil);
+		font-weight: 700;
+		font-size: clamp(28px, 4vw, 44px);
+		line-height: 1;
+		letter-spacing: -0.02em;
+		color: var(--ink-2);
+	}
+	.page :global(.tamil-submark .dot) {
+		color: var(--accent);
+	}
+</style>
