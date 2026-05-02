@@ -55,3 +55,57 @@ export interface CreateUserRequest {
 	locale: string;
 	nic_number?: string;
 }
+
+/**
+ * Role mirrors backend domain.Role. The id is a ULID; code is the
+ * stable handle (`super_admin`, `manager`, `user`) used everywhere
+ * in policy checks. `permissions` is populated by RBACService.ListUserRoles
+ * — when it appears on the wire it carries the role's grants.
+ */
+export interface Role {
+	id: string;
+	code: string;
+	display_name: string;
+	created_at: string;
+	permissions?: Permission[];
+}
+
+/** Permission mirrors backend domain.Permission. */
+export interface Permission {
+	id: string;
+	code: string;
+	display_name: string;
+	created_at: string;
+}
+
+/**
+ * Response shape from GET /api/v1/auth/me. user is the cookie-resolved
+ * actor; roles is the flat list of roles they hold (each carrying its
+ * grants). 401 from this endpoint means no session — handled at the
+ * SvelteKit layer by redirecting to /admin/login.
+ */
+export interface MeResponse {
+	user: User;
+	roles: Role[];
+}
+
+/**
+ * Response shape from GET /api/v1/admin/me. Lighter than auth/me —
+ * only carries the actor's id + roles (no full user record).
+ */
+export interface AdminMeResponse {
+	user_id: string;
+	roles: Role[];
+}
+
+/** Response shape from GET /api/v1/admin/users. */
+export interface UsersListResponse {
+	users: User[];
+	limit: number;
+	offset: number;
+}
+
+/** Response shape from GET /api/v1/admin/users/{id}/roles. */
+export interface UserRolesResponse {
+	roles: Role[];
+}

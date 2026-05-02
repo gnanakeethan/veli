@@ -1,9 +1,13 @@
 import type {
+	AdminMeResponse,
 	ApiErrorEnvelope,
 	CreateUserRequest,
 	HealthResponse,
 	HelloResponse,
-	User
+	MeResponse,
+	User,
+	UserRolesResponse,
+	UsersListResponse
 } from './types';
 
 /**
@@ -29,6 +33,26 @@ export interface ApiClient {
 	hello(): Promise<HelloResponse>;
 	getUser(id: string): Promise<User>;
 	createUser(input: CreateUserRequest): Promise<User>;
+
+	/** GET /api/v1/auth/me — returns 401 (ApiError) when no session. */
+	getMe(opts?: { headers?: HeadersInit }): Promise<MeResponse>;
+	/** POST /api/v1/auth/logout — clears the session cookie. */
+	logout(opts?: { headers?: HeadersInit }): Promise<void>;
+
+	/** GET /api/v1/admin/me — actor's user_id + roles. */
+	getAdminMe(opts?: { headers?: HeadersInit }): Promise<AdminMeResponse>;
+	/** GET /api/v1/admin/users — gated by `users:list`. */
+	listUsers(opts?: {
+		limit?: number;
+		offset?: number;
+		headers?: HeadersInit;
+	}): Promise<UsersListResponse>;
+	/** GET /api/v1/admin/users/{id}/roles — gated by `roles:list`. */
+	listUserRoles(id: string, opts?: { headers?: HeadersInit }): Promise<UserRolesResponse>;
+	/** POST /api/v1/admin/users/{id}/roles — gated by `roles:assign`. */
+	assignRole(id: string, code: string, opts?: { headers?: HeadersInit }): Promise<void>;
+	/** DELETE /api/v1/admin/users/{id}/roles/{code} — gated by `roles:assign`. */
+	revokeRole(id: string, code: string, opts?: { headers?: HeadersInit }): Promise<void>;
 }
 
 export interface ApiClientOptions {
@@ -85,6 +109,45 @@ export function createApiClient({ fetch, baseUrl }: ApiClientOptions): ApiClient
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(input)
-			})
+			}),
+
+		getMe: (opts) => request<MeResponse>('/api/v1/auth/me', { headers: opts?.headers }),
+		logout: async (opts) => {
+			await request<unknown>('/api/v1/auth/logout', {
+				method: 'POST',
+				headers: opts?.headers
+			});
+		},
+
+		getAdminMe: (opts) =>
+			request<AdminMeResponse>('/api/v1/admin/me', { headers: opts?.headers }),
+		listUsers: (opts) => {
+			const params = new URLSearchParams();
+			if (opts?.limit !== undefined) params.set('limit', String(opts.limit));
+			if (opts?.offset !== undefined) params.set('offset', String(opts.offset));
+			const qs = params.toString();
+			return request<UsersListResponse>(
+				`/api/v1/admin/users${qs ? `?${qs}` : ''}`,
+				{ headers: opts?.headers }
+			);
+		},
+		listUserRoles: (id, opts) =>
+			request<UserRolesResponse>(
+				`/api/v1/admin/users/${encodeURIComponent(id)}/roles`,
+				{ headers: opts?.headers }
+			),
+		assignRole: async (id, code, opts) => {
+			await request<unknown>(`/api/v1/admin/users/${encodeURIComponent(id)}/roles`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json', ...(opts?.headers ?? {}) },
+				body: JSON.stringify({ code })
+			});
+		},
+		revokeRole: async (id, code, opts) => {
+			await request<unknown>(
+				`/api/v1/admin/users/${encodeURIComponent(id)}/roles/${encodeURIComponent(code)}`,
+				{ method: 'DELETE', headers: opts?.headers }
+			);
+		}
 	};
 }
