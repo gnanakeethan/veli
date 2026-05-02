@@ -53,5 +53,19 @@
 	"hero_meta_use_label": "Use",
 	"hero_meta_use_value": "Civic infrastructure for everyday life",
 	"hero_meta_version_label": "Version",
-	"hero_meta_version_value": "v0.2 · Northern Province pilot"
+	"hero_meta_version_value": "v0.2 · Northern Province pilot",
+	"admin_login_title": "Veḷi Admin Console",
+	"admin_login_subtitle_ta": "நிர்வாக நுழைவு",
+	"admin_login_blurb": "This console is for Veḷi staff. Sign in with the Google account that was provisioned for you. If you do not have access, contact a Veḷi administrator.",
+	"admin_login_blurb_ta": "வெளி உறுப்பினர்களுக்கான பக்கம். உங்களுக்கு வழங்கப்பட்ட Google கணக்குடன் உள்நுழையவும்.",
+	"admin_login_signin": "Sign in with Google",
+	"admin_login_signin_ta": "Google உடன் உள்நுழை",
+	"admin_login_security_note": "Sessions last 12 hours. Sign-in is logged.",
+	"admin_login_security_note_ta": "உங்கள் அமர்வு 12 மணி நேரம் செல்லுபடியாகும். உள்நுழைவு பதியப்படுகிறது.",
+	"admin_login_error_not_provisioned": "Your Google account is not authorised for this admin console. Contact a Veḷi administrator.",
+	"admin_login_error_not_provisioned_ta": "உங்கள் Google கணக்கு இந்த நிர்வாக பக்கத்திற்கு அனுமதிக்கப்படவில்லை. நிர்வாகியை தொடர்பு கொள்ளவும்.",
+	"admin_login_error_unconfigured": "Google sign-in is not yet configured on this server.",
+	"admin_login_error_unconfigured_ta": "Google உள்நுழைவு இந்த சேவையகத்தில் இன்னும் அமைக்கப்படவில்லை.",
+	"admin_login_error_generic": "Sign-in failed. Please try again.",
+	"admin_login_error_generic_ta": "உள்நுழைய முடியவில்லை. மீண்டும் முயற்சிக்கவும்."
 }

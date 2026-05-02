@@ -34,22 +34,34 @@ const (
 	sessionCookieTTL   = 12 * time.Hour // re-authenticate twice a day
 	stateRandomBytes   = 32
 	defaultRedirectURL = "/admin"
+	loginRedirectURL   = "/admin/login"
 )
+
+// loginErrorURL builds the URL to redirect a failed sign-in back to the
+// frontend's /admin/login with a recognised error code in the query
+// string. Codes match the LoginErrorCode union in the SvelteKit page.
+// FrontendURL is empty in dev (default behaviour), in which case the
+// redirect goes to the same origin.
+func (h *AuthHandler) loginErrorURL(code string) string {
+	base := h.FrontendURL + loginRedirectURL
+	if code == "" {
+		return base
+	}
+	return base + "?error=" + code
+}
 
 // GoogleStart redirects the user to Google's authorisation endpoint.
 // It generates a random state, stamps it into a short-lived
 // HttpOnly cookie, and sends the agent on its way.
 func (h *AuthHandler) GoogleStart(w http.ResponseWriter, r *http.Request) {
 	if h.Auth == nil {
-		writeJSON(w, http.StatusServiceUnavailable, map[string]string{
-			"error": "google auth not configured",
-		})
+		http.Redirect(w, r, h.loginErrorURL("unconfigured"), http.StatusFound)
 		return
 	}
 	state, err := randomState()
 	if err != nil {
 		h.Logger.Error("generate oauth state", zap.Error(err))
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal error"})
+		http.Redirect(w, r, h.loginErrorURL("generic"), http.StatusFound)
 		return
 	}
 	http.SetCookie(w, &http.Cookie{
@@ -66,22 +78,22 @@ func (h *AuthHandler) GoogleStart(w http.ResponseWriter, r *http.Request) {
 
 // GoogleCallback validates the state cookie, exchanges the code,
 // and (on success) sets the session cookie and redirects to the
-// frontend's admin landing.
+// frontend's admin landing. Failure cases redirect to /admin/login
+// with an `error` query parameter — never raw JSON, so the user
+// always lands back in a usable UI.
 func (h *AuthHandler) GoogleCallback(w http.ResponseWriter, r *http.Request) {
 	if h.Auth == nil {
-		writeJSON(w, http.StatusServiceUnavailable, map[string]string{
-			"error": "google auth not configured",
-		})
+		http.Redirect(w, r, h.loginErrorURL("unconfigured"), http.StatusFound)
 		return
 	}
 
 	stateCookie, err := r.Cookie(stateCookieName)
 	if err != nil || stateCookie.Value == "" {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "missing state cookie"})
+		http.Redirect(w, r, h.loginErrorURL("state_mismatch"), http.StatusFound)
 		return
 	}
 	if r.URL.Query().Get("state") != stateCookie.Value {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "state mismatch"})
+		http.Redirect(w, r, h.loginErrorURL("state_mismatch"), http.StatusFound)
 		return
 	}
 
@@ -98,7 +110,7 @@ func (h *AuthHandler) GoogleCallback(w http.ResponseWriter, r *http.Request) {
 
 	code := r.URL.Query().Get("code")
 	if code == "" {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "missing code"})
+		http.Redirect(w, r, h.loginErrorURL("missing_code"), http.StatusFound)
 		return
 	}
 
@@ -106,14 +118,12 @@ func (h *AuthHandler) GoogleCallback(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch {
 		case errors.Is(err, service.ErrAdminNotProvisioned):
-			writeJSON(w, http.StatusForbidden, map[string]string{
-				"error": "admin not provisioned",
-			})
+			http.Redirect(w, r, h.loginErrorURL("not_provisioned"), http.StatusFound)
 		case errors.Is(err, service.ErrInvalidIDToken):
-			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid id token"})
+			http.Redirect(w, r, h.loginErrorURL("invalid_id_token"), http.StatusFound)
 		default:
 			h.Logger.Error("google callback", zap.Error(err))
-			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal error"})
+			http.Redirect(w, r, h.loginErrorURL("generic"), http.StatusFound)
 		}
 		return
 	}
@@ -122,7 +132,7 @@ func (h *AuthHandler) GoogleCallback(w http.ResponseWriter, r *http.Request) {
 	cookieValue, err := auth.SignSession(h.SessionSecret, userID, expiresAt)
 	if err != nil {
 		h.Logger.Error("sign session", zap.Error(err))
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal error"})
+		http.Redirect(w, r, h.loginErrorURL("generic"), http.StatusFound)
 		return
 	}
 	http.SetCookie(w, &http.Cookie{

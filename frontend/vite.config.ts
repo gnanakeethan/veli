@@ -6,7 +6,15 @@ import { sveltekit } from '@sveltejs/kit/vite';
 
 export default defineConfig({
 	server: {
-		host: '0.0.0.0'
+		host: '0.0.0.0',
+		proxy: {
+			'/api': {
+				target: 'http://localhost:8080',
+				changeOrigin: false
+			},
+			'/healthz': 'http://localhost:8080',
+			'/readyz': 'http://localhost:8080'
+		}
 	},
 	plugins: [
 		tailwindcss(),
