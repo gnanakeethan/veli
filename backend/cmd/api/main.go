@@ -79,6 +79,10 @@ func main() {
 	verifsSvc := service.NewVerificationsService(verifsRepo, docsRepo)
 	verifsHandler := &handler.VerificationsHandler{Service: verifsSvc, Logger: logger}
 
+	procsRepo := repository.NewProceduresRepository(bobDB)
+	procsSvc := service.NewProceduresService(procsRepo)
+	procsHandler := &handler.ProceduresHandler{Service: procsSvc, Logger: logger}
+
 	externalRepo := repository.NewExternalIdentitiesRepository(bobDB)
 	authSvc, err := service.NewAuthService(rootCtx, service.GoogleAuthConfig{
 		ClientID:     cfg.Auth.GoogleClientID,
@@ -131,6 +135,10 @@ func main() {
 		r.Post("/users", usersHandler.Create)
 		r.Get("/users/{id}", usersHandler.Get)
 
+		// Public procedures (citizens) — only published rows.
+		r.Get("/procedures", procsHandler.PublicList)
+		r.Get("/procedures/{slug}", procsHandler.PublicGetBySlug)
+
 		r.Route("/auth", func(r chi.Router) {
 			r.Get("/google/start", authHandler.GoogleStart)
 			r.Get("/google/callback", authHandler.GoogleCallback)
@@ -165,6 +173,15 @@ func main() {
 				Get("/verifications/{id}", verifsHandler.Get)
 			r.With(velimw.RequirePermission(rbacSvc, logger, "documents:moderate")).
 				Post("/verifications", verifsHandler.Create)
+
+			r.With(velimw.RequirePermission(rbacSvc, logger, "procedures:read")).
+				Get("/procedures", procsHandler.AdminList)
+			r.With(velimw.RequirePermission(rbacSvc, logger, "procedures:read")).
+				Get("/procedures/{id}", procsHandler.AdminGet)
+			r.With(velimw.RequirePermission(rbacSvc, logger, "procedures:write")).
+				Post("/procedures", procsHandler.AdminCreate)
+			r.With(velimw.RequirePermission(rbacSvc, logger, "procedures:write")).
+				Put("/procedures/{id}", procsHandler.AdminUpdate)
 		})
 	})
 
