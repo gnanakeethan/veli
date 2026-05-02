@@ -55,6 +55,7 @@
 		sun: Sun,
 		fish: Fish,
 		chev: ChevronRight,
+		'chevron-right': ChevronRight,
 		check: Check,
 		phone: Phone,
 		'id-card': IdCard,
