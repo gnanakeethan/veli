@@ -112,3 +112,67 @@ export interface UsersListResponse {
 export interface UserRolesResponse {
 	roles: Role[];
 }
+
+/**
+ * Document mirrors backend domain.Document. gps_lat/gps_lng are
+ * present only when the device shared location at capture time;
+ * absence is *distinct* from "0,0" and matters for chain-of-custody.
+ */
+export interface Document {
+	id: string;
+	user_id: string;
+	kind: string;
+	storage_uri: string;
+	captured_at: string;
+	gps_lat?: number;
+	gps_lng?: number;
+	device_id?: string;
+	created_at: string;
+}
+
+/** Body for POST /api/v1/admin/documents. */
+export interface CreateDocumentRequest {
+	user_id: string;
+	kind: string;
+	storage_uri: string;
+	captured_at: string;
+	gps_lat?: number;
+	gps_lng?: number;
+	device_id?: string;
+}
+
+/** Response shape from GET /api/v1/admin/documents. */
+export interface DocumentsListResponse {
+	documents: Document[];
+	limit: number;
+	offset: number;
+	user_id?: string;
+}
+
+/**
+ * Verification mirrors backend domain.Verification. tier is the
+ * normative three-tier value; the platform never inflates a lower
+ * tier to a higher one.
+ */
+export interface Verification {
+	id: string;
+	document_id: string;
+	tier: VerificationTier;
+	attester_id: string;
+	notes?: string;
+	verified_at: string;
+}
+
+/** Body for POST /api/v1/admin/verifications. */
+export interface CreateVerificationRequest {
+	document_id: string;
+	tier: VerificationTier;
+	attester_id: string;
+	notes?: string;
+}
+
+/** Response shape from GET /api/v1/admin/documents/{id}/verifications. */
+export interface VerificationsListResponse {
+	verifications: Verification[];
+	document_id: string;
+}

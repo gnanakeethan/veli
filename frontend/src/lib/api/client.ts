@@ -1,13 +1,19 @@
 import type {
 	AdminMeResponse,
 	ApiErrorEnvelope,
+	CreateDocumentRequest,
 	CreateUserRequest,
+	CreateVerificationRequest,
+	Document,
+	DocumentsListResponse,
 	HealthResponse,
 	HelloResponse,
 	MeResponse,
 	User,
 	UserRolesResponse,
-	UsersListResponse
+	UsersListResponse,
+	Verification,
+	VerificationsListResponse
 } from './types';
 
 /**
@@ -55,6 +61,28 @@ export interface ApiClient {
 	assignRole(id: string, code: string, opts?: { headers?: HeadersInit }): Promise<void>;
 	/** DELETE /api/v1/admin/users/{id}/roles/{code} — gated by `roles:assign`. */
 	revokeRole(id: string, code: string, opts?: { headers?: HeadersInit }): Promise<void>;
+
+	/** GET /api/v1/admin/documents — gated by `documents:read`. */
+	listDocuments(opts?: {
+		limit?: number;
+		offset?: number;
+		userId?: string;
+		headers?: HeadersInit;
+	}): Promise<DocumentsListResponse>;
+	/** GET /api/v1/admin/documents/{id} — gated by `documents:read`. */
+	getDocument(id: string, opts?: { headers?: HeadersInit }): Promise<Document>;
+	/** POST /api/v1/admin/documents — gated by `documents:moderate`. */
+	createDocument(input: CreateDocumentRequest, opts?: { headers?: HeadersInit }): Promise<Document>;
+	/** GET /api/v1/admin/documents/{id}/verifications — gated by `documents:read`. */
+	listDocumentVerifications(
+		id: string,
+		opts?: { headers?: HeadersInit }
+	): Promise<VerificationsListResponse>;
+	/** POST /api/v1/admin/verifications — gated by `documents:moderate`. */
+	createVerification(
+		input: CreateVerificationRequest,
+		opts?: { headers?: HeadersInit }
+	): Promise<Verification>;
 }
 
 export interface ApiClientOptions {
@@ -154,6 +182,39 @@ export function createApiClient({ fetch, baseUrl }: ApiClientOptions): ApiClient
 				`/api/v1/admin/users/${encodeURIComponent(id)}/roles/${encodeURIComponent(code)}`,
 				{ method: 'DELETE', headers: opts?.headers }
 			);
-		}
+		},
+
+		listDocuments: (opts) => {
+			const params = new URLSearchParams();
+			if (opts?.limit !== undefined) params.set('limit', String(opts.limit));
+			if (opts?.offset !== undefined) params.set('offset', String(opts.offset));
+			if (opts?.userId) params.set('user_id', opts.userId);
+			const qs = params.toString();
+			return request<DocumentsListResponse>(
+				`/api/v1/admin/documents${qs ? `?${qs}` : ''}`,
+				{ headers: opts?.headers }
+			);
+		},
+		getDocument: (id, opts) =>
+			request<Document>(`/api/v1/admin/documents/${encodeURIComponent(id)}`, {
+				headers: opts?.headers
+			}),
+		createDocument: (input, opts) =>
+			request<Document>('/api/v1/admin/documents', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json', ...(opts?.headers ?? {}) },
+				body: JSON.stringify(input)
+			}),
+		listDocumentVerifications: (id, opts) =>
+			request<VerificationsListResponse>(
+				`/api/v1/admin/documents/${encodeURIComponent(id)}/verifications`,
+				{ headers: opts?.headers }
+			),
+		createVerification: (input, opts) =>
+			request<Verification>('/api/v1/admin/verifications', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json', ...(opts?.headers ?? {}) },
+				body: JSON.stringify(input)
+			})
 	};
 }

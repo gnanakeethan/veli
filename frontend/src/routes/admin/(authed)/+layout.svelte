@@ -12,7 +12,8 @@
 
 	const navItems = [
 		{ href: '/admin', icon: 'check' as const, ta: 'மேலோட்டம்', en: 'Dashboard' },
-		{ href: '/admin/users', icon: 'doc' as const, ta: 'பயனர்கள்', en: 'Users' }
+		{ href: '/admin/users', icon: 'doc' as const, ta: 'பயனர்கள்', en: 'Users' },
+		{ href: '/admin/documents', icon: 'file' as const, ta: 'ஆவணங்கள்', en: 'Documents' }
 	];
 
 	function isActive(href: string, pathname: string): boolean {

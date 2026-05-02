@@ -3,7 +3,11 @@ export type { ApiClient, ApiClientOptions } from './client';
 export type {
 	AdminMeResponse,
 	ApiErrorEnvelope,
+	CreateDocumentRequest,
 	CreateUserRequest,
+	CreateVerificationRequest,
+	Document,
+	DocumentsListResponse,
 	HealthResponse,
 	HelloResponse,
 	MeResponse,
@@ -12,5 +16,7 @@ export type {
 	User,
 	UserRolesResponse,
 	UsersListResponse,
+	Verification,
+	VerificationsListResponse,
 	VerificationTier
 } from './types';
