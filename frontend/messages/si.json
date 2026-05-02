@@ -67,5 +67,7 @@
 	"admin_login_error_unconfigured": "Google ඇතුළුවීම මෙම සේවාදායකයේ තවම සකසා නොමැත.",
 	"admin_login_error_unconfigured_ta": "Google உள்நுழைவு இந்த சேவையகத்தில் இன்னும் அமைக்கப்படவில்லை.",
 	"admin_login_error_generic": "ඇතුළුවීම අසාර්ථක විය. නැවත උත්සාහ කරන්න.",
-	"admin_login_error_generic_ta": "உள்நுழைய முடியவில்லை. மீண்டும் முயற்சிக்கவும்."
+	"admin_login_error_generic_ta": "உள்நுழைய முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
+	"home_staff_signin": "කාර්ය මණ්ඩල පිවිසුම",
+	"home_staff_signin_ta": "நிர்வாகி நுழைவு"
 }

@@ -104,8 +104,18 @@
 		</section>
 	</main>
 
-	<footer class="border-t border-rule px-6 py-6 text-center text-sm text-ink-3">
-		{m.footer()}
+	<footer class="border-t border-rule px-6 py-6 text-sm text-ink-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+		<span>{m.footer()}</span>
+		<a
+			href="/admin/login"
+			class="font-mono text-[11.5px] uppercase tracking-wider text-ink-3 hover:text-ink transition-colors flex items-center gap-2"
+			data-testid="home-staff-signin"
+		>
+			<span>{m.home_staff_signin_ta()}</span>
+			<span class="opacity-60">·</span>
+			<span class="font-latin text-[12px] normal-case tracking-normal">{m.home_staff_signin()}</span>
+			<span aria-hidden="true">→</span>
+		</a>
 	</footer>
 
 	<StatusStrip

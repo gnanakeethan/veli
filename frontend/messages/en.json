@@ -67,5 +67,7 @@
 	"admin_login_error_unconfigured": "Google sign-in is not yet configured on this server.",
 	"admin_login_error_unconfigured_ta": "Google உள்நுழைவு இந்த சேவையகத்தில் இன்னும் அமைக்கப்படவில்லை.",
 	"admin_login_error_generic": "Sign-in failed. Please try again.",
-	"admin_login_error_generic_ta": "உள்நுழைய முடியவில்லை. மீண்டும் முயற்சிக்கவும்."
+	"admin_login_error_generic_ta": "உள்நுழைய முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
+	"home_staff_signin": "Staff sign-in",
+	"home_staff_signin_ta": "நிர்வாகி நுழைவு"
 }
