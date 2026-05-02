@@ -29,6 +29,8 @@ type procedureRequest struct {
 	TitleEn        string                  `json:"title_en,omitempty"`
 	SummaryTa      string                  `json:"summary_ta,omitempty"`
 	SummaryEn      string                  `json:"summary_en,omitempty"`
+	BodyTa         string                  `json:"body_ta,omitempty"`
+	BodyEn         string                  `json:"body_en,omitempty"`
 	FeeLKRCents    *int64                  `json:"fee_lkr_cents,omitempty"`
 	SourceURL      string                  `json:"source_url,omitempty"`
 	LastVerifiedAt *time.Time              `json:"last_verified_at,omitempty"`
@@ -117,6 +119,8 @@ func (h *ProceduresHandler) AdminCreate(w http.ResponseWriter, r *http.Request) 
 		TitleEn:        req.TitleEn,
 		SummaryTa:      req.SummaryTa,
 		SummaryEn:      req.SummaryEn,
+		BodyTa:         req.BodyTa,
+		BodyEn:         req.BodyEn,
 		FeeLKRCents:    req.FeeLKRCents,
 		SourceURL:      req.SourceURL,
 		LastVerifiedAt: req.LastVerifiedAt,
@@ -148,6 +152,8 @@ func (h *ProceduresHandler) AdminUpdate(w http.ResponseWriter, r *http.Request) 
 		TitleEn:        req.TitleEn,
 		SummaryTa:      req.SummaryTa,
 		SummaryEn:      req.SummaryEn,
+		BodyTa:         req.BodyTa,
+		BodyEn:         req.BodyEn,
 		FeeLKRCents:    req.FeeLKRCents,
 		SourceURL:      req.SourceURL,
 		LastVerifiedAt: req.LastVerifiedAt,
@@ -172,6 +178,8 @@ func mapProcedureError(
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid title (Tamil required, max 200 chars)"})
 	case errors.Is(err, service.ErrInvalidSummary):
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "summary too long"})
+	case errors.Is(err, service.ErrInvalidBody):
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "body too long (max 20000 runes)"})
 	case errors.Is(err, service.ErrInvalidSourceURL):
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid source_url"})
 	case errors.Is(err, service.ErrInvalidFee):

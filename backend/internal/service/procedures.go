@@ -20,6 +20,7 @@ var (
 	ErrInvalidSlug         = errors.New("invalid slug")
 	ErrInvalidTitle        = errors.New("invalid title")
 	ErrInvalidSummary      = errors.New("invalid summary")
+	ErrInvalidBody         = errors.New("invalid body")
 	ErrInvalidFee          = errors.New("invalid fee")
 	ErrInvalidSourceURL    = errors.New("invalid source_url")
 	ErrInvalidStatus       = errors.New("invalid status")
@@ -32,6 +33,7 @@ const (
 	slugMaxLen      = 64
 	titleMaxLen     = 200
 	summaryMaxRunes = 1000
+	bodyMaxRunes    = 20000 // 20k runes ≈ a typical long-form procedure walkthrough
 	sourceURLMaxLen = 1024
 	feeMaxCents     = int64(100_000_000) // LKR 1,000,000 sanity ceiling
 )
@@ -44,6 +46,8 @@ type CreateProcedureInput struct {
 	TitleEn        string
 	SummaryTa      string
 	SummaryEn      string
+	BodyTa         string
+	BodyEn         string
 	FeeLKRCents    *int64
 	SourceURL      string
 	LastVerifiedAt *time.Time
@@ -60,6 +64,8 @@ type UpdateProcedureInput struct {
 	TitleEn        string
 	SummaryTa      string
 	SummaryEn      string
+	BodyTa         string
+	BodyEn         string
 	FeeLKRCents    *int64
 	SourceURL      string
 	LastVerifiedAt *time.Time
@@ -143,7 +149,7 @@ func (s *ProceduresService) ListPublished(
 func (s *ProceduresService) Create(
 	ctx context.Context, in CreateProcedureInput,
 ) (domain.Procedure, error) {
-	if err := validateProcedureInputs(in.Slug, in.TitleTa, in.TitleEn, in.SummaryTa, in.SummaryEn, in.SourceURL, in.FeeLKRCents); err != nil {
+	if err := validateProcedureInputs(in.Slug, in.TitleTa, in.TitleEn, in.SummaryTa, in.SummaryEn, in.BodyTa, in.BodyEn, in.SourceURL, in.FeeLKRCents); err != nil {
 		return domain.Procedure{}, err
 	}
 	status := in.Status
@@ -167,6 +173,8 @@ func (s *ProceduresService) Create(
 		TitleEn:        strings.TrimSpace(in.TitleEn),
 		SummaryTa:      strings.TrimSpace(in.SummaryTa),
 		SummaryEn:      strings.TrimSpace(in.SummaryEn),
+		BodyTa:         strings.TrimSpace(in.BodyTa),
+		BodyEn:         strings.TrimSpace(in.BodyEn),
 		FeeLKRCents:    in.FeeLKRCents,
 		SourceURL:      strings.TrimSpace(in.SourceURL),
 		LastVerifiedAt: in.LastVerifiedAt,
@@ -186,7 +194,7 @@ func (s *ProceduresService) Update(
 	if !isWellFormedULID(in.ID) {
 		return domain.Procedure{}, ErrInvalidID
 	}
-	if err := validateProcedureInputs(in.Slug, in.TitleTa, in.TitleEn, in.SummaryTa, in.SummaryEn, in.SourceURL, in.FeeLKRCents); err != nil {
+	if err := validateProcedureInputs(in.Slug, in.TitleTa, in.TitleEn, in.SummaryTa, in.SummaryEn, in.BodyTa, in.BodyEn, in.SourceURL, in.FeeLKRCents); err != nil {
 		return domain.Procedure{}, err
 	}
 	if err := validateStatus(in.Status); err != nil {
@@ -221,6 +229,8 @@ func (s *ProceduresService) Update(
 		TitleEn:        strings.TrimSpace(in.TitleEn),
 		SummaryTa:      strings.TrimSpace(in.SummaryTa),
 		SummaryEn:      strings.TrimSpace(in.SummaryEn),
+		BodyTa:         strings.TrimSpace(in.BodyTa),
+		BodyEn:         strings.TrimSpace(in.BodyEn),
 		FeeLKRCents:    in.FeeLKRCents,
 		SourceURL:      strings.TrimSpace(in.SourceURL),
 		LastVerifiedAt: in.LastVerifiedAt,
@@ -238,7 +248,7 @@ func (s *ProceduresService) Update(
 }
 
 func validateProcedureInputs(
-	slug, titleTa, titleEn, summaryTa, summaryEn, sourceURL string, feeLKRCents *int64,
+	slug, titleTa, titleEn, summaryTa, summaryEn, bodyTa, bodyEn, sourceURL string, feeLKRCents *int64,
 ) error {
 	if err := validateSlug(slug); err != nil {
 		return err
@@ -255,11 +265,24 @@ func validateProcedureInputs(
 	if err := validateSummary(summaryEn); err != nil {
 		return err
 	}
+	if err := validateBody(bodyTa); err != nil {
+		return err
+	}
+	if err := validateBody(bodyEn); err != nil {
+		return err
+	}
 	if err := validateSourceURL(sourceURL); err != nil {
 		return err
 	}
 	if err := validateFee(feeLKRCents); err != nil {
 		return err
+	}
+	return nil
+}
+
+func validateBody(s string) error {
+	if utf8.RuneCountInString(s) > bodyMaxRunes {
+		return ErrInvalidBody
 	}
 	return nil
 }

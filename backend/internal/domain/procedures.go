@@ -32,6 +32,8 @@ type Procedure struct {
 	TitleEn        string          `json:"title_en,omitempty"`
 	SummaryTa      string          `json:"summary_ta,omitempty"`
 	SummaryEn      string          `json:"summary_en,omitempty"`
+	BodyTa         string          `json:"body_ta,omitempty"`
+	BodyEn         string          `json:"body_en,omitempty"`
 	FeeLKRCents    *int64          `json:"fee_lkr_cents,omitempty"`
 	SourceURL      string          `json:"source_url,omitempty"`
 	LastVerifiedAt *time.Time      `json:"last_verified_at,omitempty"`
