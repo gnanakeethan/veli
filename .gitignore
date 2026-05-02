@@ -22,3 +22,9 @@ frontend/test-results/
 
 # Tooling — Claude Code local permissions (per-machine)
 .claude/settings.local.json
+
+# Playwright MCP debug snapshots (per-session screenshots + DOM dumps).
+.playwright-mcp/
+
+# Stray screenshots saved at the repo root by browser tooling.
+/*.png
