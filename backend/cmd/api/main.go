@@ -75,6 +75,10 @@ func main() {
 	docsSvc := service.NewDocumentsService(docsRepo, usersRepo)
 	docsHandler := &handler.DocumentsHandler{Service: docsSvc, Logger: logger}
 
+	verifsRepo := repository.NewVerificationsRepository(bobDB)
+	verifsSvc := service.NewVerificationsService(verifsRepo, docsRepo)
+	verifsHandler := &handler.VerificationsHandler{Service: verifsSvc, Logger: logger}
+
 	externalRepo := repository.NewExternalIdentitiesRepository(bobDB)
 	authSvc, err := service.NewAuthService(rootCtx, service.GoogleAuthConfig{
 		ClientID:     cfg.Auth.GoogleClientID,
@@ -154,6 +158,13 @@ func main() {
 				Get("/documents/{id}", docsHandler.Get)
 			r.With(velimw.RequirePermission(rbacSvc, logger, "documents:moderate")).
 				Post("/documents", docsHandler.Create)
+			r.With(velimw.RequirePermission(rbacSvc, logger, "documents:read")).
+				Get("/documents/{id}/verifications", verifsHandler.ListForDocument)
+
+			r.With(velimw.RequirePermission(rbacSvc, logger, "documents:read")).
+				Get("/verifications/{id}", verifsHandler.Get)
+			r.With(velimw.RequirePermission(rbacSvc, logger, "documents:moderate")).
+				Post("/verifications", verifsHandler.Create)
 		})
 	})
 
