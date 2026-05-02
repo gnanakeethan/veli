@@ -1,13 +1,20 @@
-// Veḷi — Frontend Design System (v0.2)
+// Veḷi — Frontend Design System (v0.3)
 // Canonical reference for the SvelteKit frontend: tokens, principles,
 // components, patterns, and authoring rules. This file is the source
 // of truth. The components under frontend/src/lib/components/ui/ are
 // the implementation; CLAUDE.md points contributors here first.
 //
 // Compile: typst compile docs/design-system.typ
-// v0.2 (2026-05-01) adopts the civic palette + utilitarian aesthetic
-// described in the claude.ai/design handoff bundle. v0.1 (zinc OKLCH,
-// shadcn-svelte default) is superseded.
+//
+// Versions:
+// v0.1 — zinc OKLCH, shadcn-svelte default. Superseded.
+// v0.2 (2026-05-01) — civic palette, utilitarian aesthetic from the
+//                     first claude.ai/design handoff bundle.
+// v0.3 (2026-05-02) — adds motion tokens (5 easings + 5 durations),
+//                     state-card / steps / stats / timeline /
+//                     sync-queue primitives, and the supporting
+//                     guidance sections (motion, states, forms,
+//                     data, accessibility).
 
 #set document(
   title: "Veḷi — Frontend Design System",
@@ -41,7 +48,7 @@
 #align(center)[
   #text(20pt, weight: "bold")[Veḷi — Frontend Design System]
   #v(0.3em)
-  #text(10pt, fill: gray)[Cloud Parallax (Pvt) Ltd · v0.2 · 2026-05-01]
+  #text(10pt, fill: gray)[Cloud Parallax (Pvt) Ltd · v0.3 · 2026-05-02]
 ]
 
 #v(1em)
@@ -166,6 +173,44 @@ Three shadow tiers, very restrained — paper-feeling, never floating.
 `--sh-1` is a hairline. `--sh-2` adds a 1px y-offset. `--sh-3` is the
 raised state for popovers. Avoid heavier shadows.
 
+== Motion
+
+Civic interfaces should not vibrate or shimmer. Motion is reserved
+for status changes, verification feedback, and transitions the user
+explicitly asked for. Five easings and five durations cover everything;
+*never* hard-code a cubic-bezier or a millisecond literal.
+
+#table(
+  columns: (1fr, 2fr, 2fr),
+  stroke: 0.5pt + gray,
+  inset: 6pt,
+  align: left,
+  table.header([*Easing*], [*Curve*], [*Use*]),
+  [`--ease-standard`], [`cubic-bezier(.4,0,.2,1)`],     [Default — between two known places.],
+  [`--ease-entrance`], [`cubic-bezier(0,0,.2,1)`],      [Things arriving · acknowledgements.],
+  [`--ease-exit`],     [`cubic-bezier(.4,0,1,1)`],      [Things leaving · dismissals.],
+  [`--ease-linear`],   [`linear`],                       [Loading · indeterminate progress.],
+  [`--ease-spring`],   [`cubic-bezier(.34,1.56,.64,1)`],[Receipts · success seal · saffron stamp.],
+)
+
+#table(
+  columns: (1fr, 1fr, 2fr),
+  stroke: 0.5pt + gray,
+  inset: 6pt,
+  align: (left, right, left),
+  table.header([*Duration*], [*ms*], [*Use*]),
+  [`--dur-instant`],  [80],   [Micro feedback · press.],
+  [`--dur-fast`],     [140],  [Tooltip · chip selection.],
+  [`--dur-base`],     [220],  [Most transitions.],
+  [`--dur-slow`],     [360],  [Sheets · drawers · pages.],
+  [`--dur-ceremony`], [680],  [Verification seal · receipt fold.],
+)
+
+`prefers-reduced-motion: reduce` collapses every duration to ~1ms
+(easings stay intact) and disables the skeleton shimmer + sync
+spinner animations. Critical state changes never depend on motion
+alone — every animated state has a static affordance.
+
 = Components
 
 Every primitive lives at `frontend/src/lib/components/ui/<Name>.svelte`
@@ -191,6 +236,16 @@ primitive applies.
   [`OfflinePill`], [Saffron pill that reads "இணையமில்லை · OFFLINE". Always-visible signal when the service worker is serving cached content.],
   [`Progress`], [Slim progress bar in civic green on a paper-3 track. Used for evidence completeness, sync progress.],
   [`Segmented`], [Generic segmented-control primitive (the same `.seg` used by `LocaleSwitcher`).],
+  [`Trust`], [Citation card. Mark + title + body + optional `↳ cite`. Used wherever a claim points to a government source or audit trail.],
+  [`Receipt`], [Confirmation receipt with mono header, line items, and a centred receipt number. Designed to survive screenshots and printers.],
+  [`SMS`], [Terminal-style SMS preview for the IVR/USSD/SMS fallback surface previews.],
+  [`Phone`], [Mobile mockup frame for product-preview compositions in the docs.],
+  [`Steps`], [Multi-step form indicator. 4–6 steps; each step has one decision. `done` / `active` / pending visual states; consumers pass `{ ta, en }` per step.],
+  [`StateCard`], [Empty / loading / error card with localized title + body and an optional footer snippet for an action button. The skeleton lines for loading state are passed in via children, not baked in.],
+  [`Skeleton`], [Shimmer placeholder. `lines={n}` renders n staggered text-row skeletons; otherwise a single `width × height` block. Animation respects `prefers-reduced-motion`.],
+  [`Stats` + `Stat`], [Counter grid for dashboards. Each `Stat` carries a value, optional inline unit, Tamil label, and optional English sub-label. 4-column on desktop, 2-column on mobile.],
+  [`Timeline` + `TimelineRow`], [Vertical status timeline. Each row has a mono time, a dot (`done` / `active` / `fail` / `pending`), a Tamil title, and an optional desc.],
+  [`SyncQueue` + `SyncRow`], [Offline sync queue display. Header with localized title + signal indicator; rows carry one of four states (queued / running / ok / error) with the appropriate glyph and animation.],
 )
 
 == TierBadge contract
@@ -289,28 +344,68 @@ fields show a red `*` in the label.
 
 == Empty + error states
 
-Localised, never English-only. Use a `Card` with centred copy:
+Localised, never English-only. Prefer the `StateCard` primitive over
+a generic `Card` for empty / loading / error states:
 
-#raw("<Card class=\"text-center\">
-  <CardContent>{m.user_not_found()}</CardContent>
-</Card>")
+#raw("<StateCard kind=\"empty\" title={m.user_not_found_title()}
+                 body={m.user_not_found_body()}>
+  {#snippet children()}<Button kind=\"primary\" size=\"sm\">…</Button>{/snippet}
+</StateCard>")
 
-Server errors use `border-alert/30 bg-alert-soft text-ink` plus a
-single line of guidance ("please try again later" — never a stack
-trace). Never expose raw backend error envelopes to the user; log
-them.
+Loading state shows skeleton lines via `<Skeleton lines={3} />` —
+they should match the real layout that's loading, never generic
+spinners. Errors *name the office* and offer a concrete next step
+("Call 0212 222 555" or "Try again in 10 minutes"), never a stack
+trace and never a generic "something went wrong". Never expose raw
+backend error envelopes to the user; log them.
+
+== Multi-step forms
+
+Long government forms split across 4–6 screens, one decision per
+screen. Use the `Steps` primitive at the top to show progress;
+`active` is the current 0-based index. Each step has a Tamil
+`ta` label and an optional `en` sub-line in mono.
+
+Local-first storage is the contract: every step's data persists to
+IndexedDB before the network is touched. The `SyncQueue` primitive
+shows the user what's pending: queued (`q`), uploading (`r`), ok
+(`k`), or errored (`e`). The queue is editable — users can cancel
+or retry rows.
+
+== Status timelines
+
+Every government action gets a `Timeline` view. Citizens can
+subscribe to a request and see exactly which row is `active`. Past
+rows are `done` (civic green); failed steps are `fail` (alert red);
+future rows stay `pending` (default ring). Each row carries a mono
+time/relative-time on the left, a dot in the centre rail, and the
+Tamil title plus optional EN/meta description on the right.
 
 = Accessibility
 
-- *Touch targets:* 44 px minimum. `Button size="md"` is 48 px.
-- *Focus rings:* never disable. The `--ring` token is `--primary`; a
+A floor, not a ceiling. Six load-bearing rules; if a control fails
+any of them, it does not ship.
+
+#table(
+  columns: (1fr, 3fr),
+  stroke: 0.5pt + gray,
+  inset: 6pt,
+  align: left,
+  table.header([*Rule*], [*Detail*]),
+  [Contrast], [Every text-on-background pair tested at 4.5:1 (body) or 3.0:1 (≥ 24px or 16px-bold). Civic green on paper hits 11.2:1. Saffron is reserved for ≥ 24px or 16px-bold — *never* small body text. Dark mode swaps softs and inks together.],
+  [Targets], [No tap target below 48×48 dp. Spacing tokens enforce this — buttons (48 px at `md`), list rows (`--d-row-h: 56px`), and chips inherit a minimum height. Mid-range Android, sweat-on-glass, harvest gloves.],
+  [Input], [No keyboard traps. IME-aware Tamil entry. Every form supports Tamil phonetic, English, and bilingual modes. Tab order matches reading order. Submit-on-enter is opt-in only.],
+  [Motion], [`prefers-reduced-motion: reduce` is respected end-to-end. Saffron seal stamps, sheet animations, and skeleton shimmers fall back to instant cross-fades. Critical state changes never depend on motion alone.],
+  [Audio], [Critical confirmations carry an *optional* Tamil voice line plus a single haptic pulse (`navigator.vibrate(40)`). Off by default in noisy/quiet zones. `aria-live="polite"` for status updates.],
+  [Literacy], [Plain Tamil. Every step in a government flow has a recorded (not synthetic) voice-over button. Forms never depend on a citizen reading anything longer than 8 words.],
+)
+
+Implementation specifics:
+- *Focus rings* never disable. The `--ring` token is `--primary`; a
   2 px ring at 2 px offset is the default focus halo.
-- *Contrast:* civic palette body sizes meet AA. Tier badges and the
-  saffron offline pill have been verified against the relevant
-  backgrounds; consult the colour table when adding new combinations.
-- *aria-label:* every interactive control needs one, *and it must be
+- *aria-label* every interactive control needs one, *and it must be
   localised through Paraglide*. Never hard-code English.
-- *Language tag:* `<html lang>` is set by Paraglide via the
+- *Language tag* `<html lang>` is set by Paraglide via the
   `%paraglide.lang%` placeholder. Don't override.
 
 = Internationalisation
@@ -324,6 +419,43 @@ them.
   Paraglide's parameter syntax — no string concatenation across keys.
 - *Numerals.* Use European numerals (0–9) by default; Tamil numerals
   only when explicitly requested by content.
+
+= Voice and copy
+
+Civic interfaces fail when they sound like government. Veḷi writes
+the way a careful neighbour would explain something: short
+sentences, real numbers, no jargon. Every error names the next
+action.
+
+Sample tone (write / avoid):
+
+#table(
+  columns: (1fr, 2fr, 2fr),
+  stroke: 0.5pt + gray,
+  inset: 6pt,
+  align: left,
+  table.header([*Context*], [*Write*], [*Avoid*]),
+  [Confirmation], [பிறப்பு சான்றிதழ் தயாராகி உள்ளது.\ #text(fill: gray)[Your birth certificate is ready.]], [Your requested document has been successfully processed.],
+  [Error], [இந்தத் தொலைபேசி எண் வேறொருவரால் பயன்படுத்தப்படுகிறது. சரிசெய்ய அலுவலகத்தை அழைக்கவும் — 0212 222 555.\ #text(fill: gray)[That number is already in use. Call the office to fix it — 0212 222 555.]], [Error 0x4F2: Invalid input.],
+  [Wait], [அலுவலர் இப்போது பார்க்கிறார். வழக்கமாக இது 2 நாட்கள் ஆகும்.\ #text(fill: gray)[An officer is reviewing this now. It usually takes 2 days.]], [Your request is queued.],
+  [Empty], [இங்கே இன்னும் எதுவும் இல்லை. முதல் நிலத்தைச் சேர்க்கவும்.\ #text(fill: gray)[Nothing here yet. Add your first land.]], [No record found.],
+)
+
+Lexicon — words we standardise across every product:
+
+#table(
+  columns: (1fr, 1fr, 1fr, 2fr),
+  stroke: 0.5pt + gray,
+  inset: 6pt,
+  align: left,
+  table.header([*Concept*], [*Tamil*], [*English fallback*], [*Note*]),
+  [Submit], [சமர்ப்பிக்க], [Submit], [Not "Send" — submission implies record.],
+  [Verify], [சரிபார்], [Verify], [Pairs with the saffron seal.],
+  [Officer], [அலுவலர்], [Officer], [Always name the office, not "the system".],
+  [Receipt], [பெறுசீட்டு], [Receipt], [Mandatory after every action that costs money or creates a record.],
+  [Pending], [நிலுவையில்], [Pending], [Always pair with the working-day count.],
+  [Sync], [பதிவேற்று], [Upload], [Tamil avoids "sync" — frame as "upload when signal returns".],
+)
 
 = Mobile-first defaults
 

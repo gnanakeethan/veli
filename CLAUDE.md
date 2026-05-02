@@ -106,9 +106,9 @@ The strategic plan is multi-file by design so different topics evolve independen
 
 ## Frontend design system
 
-The canonical reference is `docs/design-system.typ` (v0.2, civic palette). Read it before adding any UI. It defines the colour, typography, spacing, radius, and elevation tokens; the four design commitments (Tamil-first, Trust-by-citation, Low-bandwidth, Dignified); the component catalogue; the page-shell, hero, list-of-properties, trust, receipt, and SMS patterns; the three-tier verification visual contract with normative dual-language tier labels; the accessibility checklist; and the i18n authoring rules.
+The canonical reference is `docs/design-system.typ` (v0.3, civic palette + motion + state primitives). Read it before adding any UI. It defines the colour, typography, spacing, radius, elevation, and motion tokens; the four design commitments (Tamil-first, Trust-by-citation, Low-bandwidth, Dignified); the component catalogue; the page-shell, hero, list-of-properties, trust, receipt, SMS, multi-step form, status-timeline, and offline-sync-queue patterns; the three-tier verification visual contract with normative dual-language tier labels; the six-rule accessibility floor; the voice/copy lexicon; and the i18n authoring rules.
 
-The aesthetic is civic-utilitarian: warm paper background (`--paper-2`), civic green primary (`#0E4D3F`), saffron-gold accent for verification (`#D9A441`), JetBrains Mono for metadata and IDs, Noto Sans Tamil for everything user-facing. Three theme variants (`civic` / `paper` / `ink`) and three density variants (`compact` / `regular` / `comfy`) toggle via `data-theme` and `data-density` on `<html>`. v0.1 (zinc OKLCH shadcn default) is superseded.
+The aesthetic is civic-utilitarian: warm paper background (`--paper-2`), civic green primary (`#0E4D3F`), saffron-gold accent for verification (`#D9A441`), JetBrains Mono for metadata and IDs, Noto Sans Tamil for everything user-facing. Motion is bounded: five easings (`--ease-standard|entrance|exit|linear|spring`) and five durations (`--dur-instant|fast|base|slow|ceremony`); `prefers-reduced-motion: reduce` collapses durations to ~1ms. Three theme variants (`civic` / `paper` / `ink`) and three density variants (`compact` / `regular` / `comfy`) toggle via `data-theme` and `data-density` on `<html>`. v0.1 (zinc OKLCH shadcn default) and v0.2 (civic palette without motion / state primitives) are superseded.
 
 The implementation lives at `frontend/src/lib/components/ui/`. Available primitives:
 
@@ -126,6 +126,16 @@ The implementation lives at `frontend/src/lib/components/ui/`. Available primiti
 | `OfflinePill` | Saffron pill that always reads "இணையமில்லை · OFFLINE". |
 | `Progress` | Slim progress bar in civic green on a paper-3 track. |
 | `Segmented` | Generic segmented-control primitive. |
+| `Trust` | Citation card with mark + title + body + optional `↳ cite`. |
+| `Receipt` | Mono confirmation receipt with header, rows, and centred number. |
+| `SMS` | Terminal-style SMS preview for IVR/USSD/SMS fallback compositions. |
+| `Phone` | Mobile mockup frame for product previews. |
+| `Steps` | Multi-step form indicator (4–6 steps; `done` / `active` / pending). |
+| `StateCard` | Empty / loading / error card with localized title + body + optional footer snippet. |
+| `Skeleton` | Shimmer placeholder; `lines={n}` for stacked text rows. Respects `prefers-reduced-motion`. |
+| `Stats` + `Stat` | Counter grid for dashboards: value + optional unit + Tamil label + optional EN sub. |
+| `Timeline` + `TimelineRow` | Vertical status timeline. Dot states `done` / `active` / `fail` / `pending`. |
+| `SyncQueue` + `SyncRow` | Offline sync queue. Row states `q` / `r` / `k` / `e`. |
 
 Rules of engagement:
 
