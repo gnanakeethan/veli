@@ -20,10 +20,13 @@ export type VerificationTier = 'self_asserted' | 'community_corroborated' | 'aut
 /**
  * User mirrors backend domain.User. nic_number is omitted when the
  * user has not had their NIC linked (authority-attested flows only).
+ * email is populated for admin users (linked via Google OIDC sign-in)
+ * and absent for ordinary phone-anchored users.
  */
 export interface User {
 	id: string;
 	phone: string;
+	email?: string;
 	nic_number?: string;
 	display_name: string;
 	locale: string;
