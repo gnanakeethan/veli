@@ -47,6 +47,8 @@ export interface ApiClient {
 		offset?: number;
 		headers?: HeadersInit;
 	}): Promise<UsersListResponse>;
+	/** GET /api/v1/admin/users/{id} — gated by `users:read`. */
+	getAdminUser(id: string, opts?: { headers?: HeadersInit }): Promise<User>;
 	/** GET /api/v1/admin/users/{id}/roles — gated by `roles:list`. */
 	listUserRoles(id: string, opts?: { headers?: HeadersInit }): Promise<UserRolesResponse>;
 	/** POST /api/v1/admin/users/{id}/roles — gated by `roles:assign`. */
@@ -131,6 +133,10 @@ export function createApiClient({ fetch, baseUrl }: ApiClientOptions): ApiClient
 				{ headers: opts?.headers }
 			);
 		},
+		getAdminUser: (id, opts) =>
+			request<User>(`/api/v1/admin/users/${encodeURIComponent(id)}`, {
+				headers: opts?.headers
+			}),
 		listUserRoles: (id, opts) =>
 			request<UserRolesResponse>(
 				`/api/v1/admin/users/${encodeURIComponent(id)}/roles`,

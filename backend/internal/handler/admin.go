@@ -45,6 +45,27 @@ func (h *AdminHandler) Me(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// GetUser serves GET /api/v1/admin/users/{id}. Returns 404 when the
+// id is unknown; 400 when the id isn't a valid ULID. Requires
+// permission `users:read` (gated upstream).
+func (h *AdminHandler) GetUser(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	user, err := h.Users.GetByID(r.Context(), id)
+	if err != nil {
+		switch {
+		case errors.Is(err, service.ErrInvalidID):
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid user id"})
+		case errors.Is(err, service.ErrUserNotFound):
+			writeJSON(w, http.StatusNotFound, map[string]string{"error": "user not found"})
+		default:
+			h.Logger.Error("admin get user", zap.String("user_id", id), zap.Error(err))
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal error"})
+		}
+		return
+	}
+	writeJSON(w, http.StatusOK, user)
+}
+
 // ListUsers serves GET /api/v1/admin/users?limit=&offset=. Both
 // query params are optional; defaults are applied by the service.
 // Requires permission `users:list` (gated upstream).

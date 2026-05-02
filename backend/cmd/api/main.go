@@ -135,6 +135,8 @@ func main() {
 
 			r.With(velimw.RequirePermission(rbacSvc, logger, "users:list")).
 				Get("/users", adminHandler.ListUsers)
+			r.With(velimw.RequirePermission(rbacSvc, logger, "users:read")).
+				Get("/users/{id}", adminHandler.GetUser)
 			r.With(velimw.RequirePermission(rbacSvc, logger, "roles:list")).
 				Get("/users/{id}/roles", adminHandler.ListUserRoles)
 			r.With(velimw.RequirePermission(rbacSvc, logger, "roles:assign")).
