@@ -100,6 +100,21 @@ migrations/version:
 	go run github.com/pressly/goose/v3/cmd/goose@$(GOOSE_VERSION) -dir ./assets/migrations postgres "postgres://${DB_DSN}" version
 
 # ==================================================================================== #
+# OPERATOR TASKS
+# ==================================================================================== #
+
+## admin/grant EMAIL=<addr> [NAME=<n>] [PHONE=<p>] [LOCALE=<l>] [ROLE=<r>]: provision an admin and grant a role
+.PHONY: admin/grant
+admin/grant:
+	@if [ -z "$(EMAIL)" ]; then echo "EMAIL=<addr> is required"; exit 2; fi
+	go run ./cmd/admin grant \
+		--email="$(EMAIL)" \
+		$(if $(NAME),--name="$(NAME)") \
+		$(if $(PHONE),--phone="$(PHONE)") \
+		$(if $(LOCALE),--locale="$(LOCALE)") \
+		$(if $(ROLE),--role="$(ROLE)")
+
+# ==================================================================================== #
 # CODE GENERATION
 # ==================================================================================== #
 

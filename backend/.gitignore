@@ -8,3 +8,8 @@ internal/database/enums/
 # Air hot-reload build artifacts.
 tmp/
 build-errors.log
+
+# Stray binaries from `go build ./cmd/X` invocations that drop into
+# the package directory. Real artifacts live under tmp/ via `make build`.
+/admin
+/api

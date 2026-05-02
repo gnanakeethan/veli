@@ -13,6 +13,7 @@ import (
 	"github.com/aarondl/opt/omit"
 	"github.com/aarondl/opt/omitnull"
 	"github.com/stephenafamo/bob"
+	"github.com/stephenafamo/bob/dialect/psql"
 	"github.com/stephenafamo/bob/dialect/psql/sm"
 
 	"github.com/cloudparallax/veli/internal/database/models"
@@ -28,6 +29,7 @@ var ErrUserNotFound = errors.New("user not found")
 // layer depends on this interface so it can be stubbed in tests.
 type UsersRepository interface {
 	GetByID(ctx context.Context, id string) (domain.User, error)
+	GetByEmail(ctx context.Context, email string) (domain.User, error)
 	Create(ctx context.Context, user *domain.User) error
 	List(ctx context.Context, limit, offset int) ([]domain.User, error)
 }
@@ -50,6 +52,24 @@ func (r *bobUsersRepository) GetByID(ctx context.Context, id string) (domain.Use
 	}
 	if err != nil {
 		return domain.User{}, fmt.Errorf("find user: %w", err)
+	}
+	return modelToDomain(user), nil
+}
+
+// GetByEmail looks up a user by email. The email column has a partial
+// unique index (only enforced when non-null), so this returns the
+// single matching row when present. Used by the admin bootstrap CLI
+// and by the Google OIDC link path before external_identities is
+// populated.
+func (r *bobUsersRepository) GetByEmail(ctx context.Context, email string) (domain.User, error) {
+	user, err := models.Users.Query(
+		sm.Where(models.Users.Columns.Email.EQ(psql.Arg(email))),
+	).One(ctx, r.exec)
+	if errors.Is(err, sql.ErrNoRows) {
+		return domain.User{}, ErrUserNotFound
+	}
+	if err != nil {
+		return domain.User{}, fmt.Errorf("find user by email: %w", err)
 	}
 	return modelToDomain(user), nil
 }

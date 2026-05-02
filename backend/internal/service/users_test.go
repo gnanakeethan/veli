@@ -42,6 +42,13 @@ func (s *stubUsersRepo) List(_ context.Context, _, _ int) ([]domain.User, error)
 	return nil, s.err
 }
 
+// GetByEmail satisfies the UsersRepository interface; the email path
+// is exercised by the admin bootstrap CLI, not by the service-level
+// tests in this file.
+func (s *stubUsersRepo) GetByEmail(_ context.Context, _ string) (domain.User, error) {
+	return s.user, s.err
+}
+
 func TestUsersService_GetByID(t *testing.T) {
 	const validULID = "01ARZ3NDEKTSV4RRFFQ69G5FAV"
 
