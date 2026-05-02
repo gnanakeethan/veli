@@ -110,6 +110,25 @@
 			{/if}
 		</section>
 
+		{#if data.proc.body_ta}
+			<section class="mb-8">
+				{#each data.proc.body_ta.split(/\n{2,}/) as para, i (i)}
+					<p class="text-[15.5px] leading-relaxed mb-4 last:mb-0">{para}</p>
+				{/each}
+			</section>
+		{/if}
+
+		{#if data.proc.body_en}
+			<section class="mb-8 pl-4 border-l-2 border-rule">
+				<div class="font-mono text-[10.5px] uppercase tracking-wider text-ink-3 mb-2">
+					English version
+				</div>
+				{#each data.proc.body_en.split(/\n{2,}/) as para, i (i)}
+					<p class="font-latin text-[13.5px] text-ink-3 leading-relaxed mb-3 last:mb-0">{para}</p>
+				{/each}
+			</section>
+		{/if}
+
 		<Trust
 			title={m.procedures_legal_disclaimer()}
 			body={m.procedures_legal_disclaimer_en()}

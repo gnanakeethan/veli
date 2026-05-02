@@ -43,6 +43,8 @@ export const actions: Actions = {
 			title_en: values.title_en || undefined,
 			summary_ta: values.summary_ta || undefined,
 			summary_en: values.summary_en || undefined,
+			body_ta: values.body_ta || undefined,
+			body_en: values.body_en || undefined,
 			source_url: values.source_url || undefined,
 			status: values.status as ProcedureStatus
 		};
@@ -84,6 +86,8 @@ function readFormValues(form: FormData) {
 		title_en: String(form.get('title_en') ?? '').trim(),
 		summary_ta: String(form.get('summary_ta') ?? ''),
 		summary_en: String(form.get('summary_en') ?? ''),
+		body_ta: String(form.get('body_ta') ?? ''),
+		body_en: String(form.get('body_en') ?? ''),
 		fee_lkr: String(form.get('fee_lkr') ?? '').trim(),
 		source_url: String(form.get('source_url') ?? '').trim(),
 		last_verified_at: String(form.get('last_verified_at') ?? '').trim(),

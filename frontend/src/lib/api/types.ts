@@ -197,6 +197,8 @@ export interface Procedure {
 	title_en?: string;
 	summary_ta?: string;
 	summary_en?: string;
+	body_ta?: string;
+	body_en?: string;
 	fee_lkr_cents?: number;
 	source_url?: string;
 	last_verified_at?: string;
@@ -212,6 +214,8 @@ export interface ProcedureRequest {
 	title_en?: string;
 	summary_ta?: string;
 	summary_en?: string;
+	body_ta?: string;
+	body_en?: string;
 	fee_lkr_cents?: number | null;
 	source_url?: string;
 	last_verified_at?: string;

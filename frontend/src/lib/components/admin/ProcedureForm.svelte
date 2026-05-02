@@ -10,6 +10,8 @@
 		title_en?: string;
 		summary_ta?: string;
 		summary_en?: string;
+		body_ta?: string;
+		body_en?: string;
 		fee_lkr?: string;
 		source_url?: string;
 		last_verified_at?: string;
@@ -86,6 +88,24 @@
 	<div class="md:col-span-2">
 		<Field label="summary (en)" hint={m.admin_procedures_field_summary_en_help()}>
 			<textarea name="summary_en" class="field-input" rows="3">{values.summary_en ?? ''}</textarea>
+		</Field>
+	</div>
+
+	<div class="md:col-span-2">
+		<Field
+			label="body (ta) · long-form walkthrough"
+			hint="Step-by-step instructions in Tamil. Blank lines separate paragraphs. Max 20,000 characters."
+		>
+			<textarea name="body_ta" class="field-input" rows="10">{values.body_ta ?? ''}</textarea>
+		</Field>
+	</div>
+
+	<div class="md:col-span-2">
+		<Field
+			label="body (en)"
+			hint="Same content in English (optional)."
+		>
+			<textarea name="body_en" class="field-input" rows="8">{values.body_en ?? ''}</textarea>
 		</Field>
 	</div>
 

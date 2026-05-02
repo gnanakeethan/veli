@@ -51,6 +51,8 @@
 			title_en: data.proc.title_en ?? '',
 			summary_ta: data.proc.summary_ta ?? '',
 			summary_en: data.proc.summary_en ?? '',
+			body_ta: data.proc.body_ta ?? '',
+			body_en: data.proc.body_en ?? '',
 			fee_lkr:
 				data.proc.fee_lkr_cents !== undefined && data.proc.fee_lkr_cents !== null
 					? String(data.proc.fee_lkr_cents / 100)
