@@ -3,13 +3,15 @@
 // the section files there, not this file (unless changing structure).
 // Build with: typst compile veli_implementation_plan.typ
 //
-// Source of truth as of 2026-05-01: v1.5 (bottom-up budgets, phase gates and
-// scope compression, expanded protocol specs for identity recovery and trained
-// helpers, larger team sizing, Thesawalamai legal partner requirement). Builds
-// on v1.4 (Polly Neural TTS + Jaffna pronunciation lexicon) and v1.3 (self-
-// hosted Tier III colocation; PWA + IVR/USSD/SMS via Ideamart and hSenid;
-// Notaries Ordinance posture). Frozen single-file snapshots are kept under
-// `docs/snapshots/` as `vN.M.typ`.
+// Source of truth as of 2026-05-02: v1.6 (AI agents on Vertex AI MaaS under a
+// Google Cloud Data Processing Addendum; Gemma 4 model selection; Phase 0
+// evaluation gate; de-identification at the application boundary). Builds on
+// v1.5 (bottom-up budgets, phase gates and scope compression, expanded
+// protocol specs for identity recovery and trained helpers, larger team
+// sizing, Thesawalamai legal partner requirement), v1.4 (Polly Neural TTS +
+// Jaffna pronunciation lexicon), and v1.3 (self-hosted Tier III colocation;
+// PWA + IVR/USSD/SMS via Ideamart and hSenid; Notaries Ordinance posture).
+// Frozen single-file snapshots are kept under `docs/snapshots/` as `vN.M.typ`.
 
 #set document(
   title: "Veḷi — Phased Implementation Plan",
@@ -94,8 +96,8 @@
   ]
   #v(1.5cm)
   #text(10pt, fill: gray)[
-    Version 1.5 #sym.dot.c May 2026 \
-    #text(8pt, style: "italic")[Bottom-up budgets, phase gates, protocol specs]
+    Version 1.6 #sym.dot.c May 2026 \
+    #text(8pt, style: "italic")[AI agents on Vertex AI MaaS; Gemma 4]
   ]
 ]
 
@@ -114,8 +116,9 @@
 #include "docs/plan/05_phase3_agri.typ"
 #include "docs/plan/06_phase4_consolidation.typ"
 #include "docs/plan/07_cross_cutting.typ"
-#include "docs/plan/08_organization.typ"
-#include "docs/plan/09_funding.typ"
-#include "docs/plan/10_risk_register.typ"
-#include "docs/plan/11_phase_gates.typ"
-#include "docs/plan/12_conclusion.typ"
+#include "docs/plan/08_ai_agents.typ"
+#include "docs/plan/09_organization.typ"
+#include "docs/plan/10_funding.typ"
+#include "docs/plan/11_risk_register.typ"
+#include "docs/plan/12_phase_gates.typ"
+#include "docs/plan/13_conclusion.typ"

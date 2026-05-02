@@ -7,7 +7,7 @@
 3. **Phase 3** — Agricultural Supply Chain Traceability (producer ↔ exporter ↔ diaspora)
 4. **Phase 4** — Platform Consolidation (unified civic infrastructure)
 
-The strategic plan is the source of truth. Plan version: **v1.5** (May 2026). The plan compiles from a Typst entrypoint and is split into per-section files under `docs/plan/`. Frozen single-file snapshots are kept under `docs/snapshots/` as `vN.M.typ`.
+The strategic plan is the source of truth. Plan version: **v1.6** (May 2026). The plan compiles from a Typst entrypoint and is split into per-section files under `docs/plan/`. Frozen single-file snapshots are kept under `docs/snapshots/` as `vN.M.typ`.
 
 ## Repository layout
 
@@ -25,15 +25,17 @@ The strategic plan is the source of truth. Plan version: **v1.5** (May 2026). Th
 │   │   ├── 05_phase3_agri.typ
 │   │   ├── 06_phase4_consolidation.typ
 │   │   ├── 07_cross_cutting.typ
-│   │   ├── 08_organization.typ
-│   │   ├── 09_funding.typ
-│   │   ├── 10_risk_register.typ
-│   │   ├── 11_phase_gates.typ        # Gate criteria + compression options + pre-mortem (NEW in v1.5)
-│   │   └── 12_conclusion.typ
+│   │   ├── 08_ai_agents.typ           # AI agents on Vertex AI MaaS, Gemma 4 (NEW in v1.6)
+│   │   ├── 09_organization.typ
+│   │   ├── 10_funding.typ
+│   │   ├── 11_risk_register.typ
+│   │   ├── 12_phase_gates.typ        # Gate criteria + compression options + pre-mortem (NEW in v1.5)
+│   │   └── 13_conclusion.typ
 │   └── snapshots/
 │       ├── v1.3.typ               # Frozen snapshot
 │       ├── v1.4.typ               # Frozen snapshot
-│       └── v1.5.typ               # Frozen snapshot of v1.5 (current)
+│       ├── v1.5.typ               # Frozen snapshot
+│       └── v1.6.typ               # Frozen snapshot of v1.6 (current)
 ├── backend/                       # Go 1.26 single-binary REST API
 │   ├── cmd/api/main.go
 │   ├── internal/                  # config, domain, handler, middleware, repository, service
@@ -204,12 +206,13 @@ Tier is shown to the user in both English and Tamil on every surface. The platfo
 ## What this codebase does NOT have (and we do not pretend it does)
 
 - No CI pipeline. No production deployment. No real users.
-- No named NGO partner, no named diaspora foundation, no named legal/academic partner. Phase 0 work. (Per v1.5 §2, the legal-partner panel must include practitioners with active **Thesawalamai** practice — Northern Province family inheritance and property arrangements are governed by Thesawalamai customary law, not Roman-Dutch general law alone.)
-- No hosting contract. No colocation site selected. No hardware procured (Phase 0 hardware CAPEX line: ~LKR 8–15M / USD 25–50k for redundant two-site PostgreSQL + Ceph baseline).
+- No named NGO partner, no named diaspora foundation, no named legal/academic partner. Phase 0 work. (Per v1.6 §2, the legal-partner panel must include practitioners with active **Thesawalamai** practice — Northern Province family inheritance and property arrangements are governed by Thesawalamai customary law, not Roman-Dutch general law alone.)
+- No hosting contract. No colocation site selected. No hardware procured (Phase 0 hardware CAPEX line: ~LKR 8–15M / USD 25–50k for redundant two-site PostgreSQL + Ceph baseline). The hardware BOM excludes GPU servers because inference is hosted on Vertex AI MaaS (see plan §8).
 - Ideamart developer account exists (Cloud Parallax holds it from prior work), but no Veḷi-specific shortcode/USSD code allocated yet; no hSenid Mobile commercial agreement.
 - No AWS account with Polly access provisioned; no Jaffna Tamil pronunciation lexicon drafted; no IVR audio rendered.
+- No Google Cloud project with Vertex AI provisioned; no Cloud Data Processing Addendum (CDPA) executed; no de-identification service implemented; no Phase 0 AI evaluation gate run against `gemma4:e4b`/`gemma4:26b`/`gemma4:31b` on a Jaffna Tamil eval set.
 - No DPO appointed, no PDPA registration, no DPIA performed.
-- No corporate form decision (Veḷi Foundation vs. Cloud Parallax operating division — see plan §8).
+- No corporate form decision (Veḷi Foundation vs. Cloud Parallax operating division — see plan §9).
 - No data trust deed, no successor institution named.
 - No demand-side baseline survey conducted.
 
@@ -222,16 +225,17 @@ The plan's deliverables list (`docs/plan/02_phase0_foundations.typ`) is the cano
 - When the plan names a Sri Lankan statute (PDPA No. 9 of 2022 as amended by Act No. 22 of 2025; Online Safety Act No. 9 of 2024; Notaries Ordinance; Prevention of Frauds Ordinance No. 7 of 1840 §2; Companies Act No. 7 of 2007; Title Registration Act No. 21 of 1998; Trusts Ordinance; Financial Transactions Reporting Act No. 6 of 2006; Foreign Exchange Act), preserve the citation exactly. Do not paraphrase or modernize.
 - Match the plan's measured, executable voice — no marketing language.
 - Preserve the three-tier verification labels exactly: `self_asserted`, `community_corroborated`, `authority_attested`. Do not revert to earlier draft names like `community_witnessed` or `authority_verified`.
-- Use v1.5 team-size figures (five to seven through Phase 0 / early Phase 1; fourteen to seventeen by end of Phase 2; thirty to forty by end of Phase 3). Earlier drafts of this plan understated team size; do not revert to those numbers.
+- Use v1.6 team-size figures (five to seven through Phase 0 / early Phase 1; fourteen to seventeen by end of Phase 2; thirty to forty by end of Phase 3). Earlier drafts of this plan understated team size; do not revert to those numbers.
 - Treat the Identity Recovery Protocol (`docs/plan/07_cross_cutting.typ` §Identity Recovery Protocol) and the Trained-Helper Programme (same file §Trained-Helper Programme) as **first-class protocol specs**, not Phase 0 deliverables to be sketched later. They are normative and any product change must conform.
-- Treat `docs/plan/11_phase_gates.typ` as binding: the gate criteria are go/no-go decisions for each phase boundary, and the two compression options (two-product variant, sequenced-only variant) are pre-approved fallbacks. Choosing one of them at a gate is a normal outcome, not a failure mode.
+- Treat `docs/plan/12_phase_gates.typ` as binding: the gate criteria are go/no-go decisions for each phase boundary, and the two compression options (two-product variant, sequenced-only variant) are pre-approved fallbacks. Choosing one of them at a gate is a normal outcome, not a failure mode.
+- Treat `docs/plan/08_ai_agents.typ` as binding for AI work: agents are scoped narrowly, run on Vertex AI MaaS under a Google Cloud Data Processing Addendum (the PDPA §26 instrument), every payload is de-identified at the application boundary before it leaves Sri Lanka, and every consequential action requires explicit user-in-the-loop confirmation. No agent acts autonomously on user data.
 - Wrap Go errors with context; never silence them.
 - Keep Tamil colloquial Jaffna register for user-facing copy.
 - For any new frontend UI, consult `docs/design-system.typ` and the primitives at `frontend/src/lib/components/ui/` before writing raw Tailwind. Add to the design system rather than around it.
 
 ## What Claude should never do
 
-- Suggest AWS, GCP, or Azure for primary infrastructure. (One narrow exception, called out in the plan: Amazon Polly is permitted for **offline** Tamil IVR prompt rendering, governed by a documented PDPA §26 instrument; Polly never sees user data and never serves audio at call time.)
+- Suggest AWS, GCP, or Azure for primary infrastructure. (Two narrow exceptions, both called out in the plan: (1) Amazon Polly is permitted for **offline** Tamil IVR prompt rendering, governed by a documented PDPA §26 instrument; Polly never sees user data and never serves audio at call time. (2) Vertex AI Model-as-a-Service is permitted for **AI agent inference** under the Google Cloud Data Processing Addendum as the PDPA §26 instrument, with strict de-identification at the application boundary so no NIC, phone, GPS, witness name, or payment identifier ever leaves Sri Lanka. See `docs/plan/08_ai_agents.typ` for the full architecture.)
 - Suggest WhatsApp, Telegram, Signal, or any third-party messaging service. The plan deliberately excludes these in favour of PWA + Veḷi-controlled IVR/USSD/SMS.
 - Translate Tamil from English machine-translation; commission proper localization.
 - Commit `.env`, `.claude/settings.local.json`, or anything under `secrets/`.

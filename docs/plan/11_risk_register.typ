@@ -5,13 +5,13 @@
 - *Mission drift.* The organisation, under funding pressure, drifts from civic mission into pure commercial work. Mitigation: governance structure with civil society representation; published mission and annual mission audit.
 - *Political capture.* A funder or partner with a political agenda gains disproportionate influence. Mitigation: funder diversification; refusal of conditional grants; published funder-name and amount-band register.
 - *Founder dependency.* Loss of a founder collapses the organisation. Mitigation: documented operating playbooks; deputy roles from Phase 2; written leadership succession plan.
-- *Conflict of interest.* Cloud Parallax commercial interests bleed into Veḷi decisions. Mitigation: corporate form decision in Phase 0 (see Section 8); written conflict-of-interest policy and related-party-transactions register.
+- *Conflict of interest.* Cloud Parallax commercial interests bleed into Veḷi decisions. Mitigation: corporate form decision in Phase 0 (see Section 9); written conflict-of-interest policy and related-party-transactions register.
 
 == Regulatory Risks
 
 - *Online Safety Act exposure.* User-generated content (witness statements, government-service summaries, QR provenance pages) draws an OSC removal directive or "false statement" complaint. Mitigation: OSA exposure register; 24-hour takedown SLA; legal partner escalation; corporate-structure separation of content infrastructure.
 - *PDPA non-compliance.* Failure to register, appoint a DPO, or honour data-subject requests within the §17 21-working-day window. Mitigation: PDPA compliance scaffolding from Phase 0; annual DPIA; named DPO.
-- *Cross-border-transfer breach* of the encrypted DR backup. Live operations remain in Sri Lanka; only the encrypted tertiary disaster-recovery backup may sit outside the country. Mitigation: documented §26 instrument; encryption at rest with keys held in-country; access logged and audited.
+- *Cross-border-transfer breach.* Risk applies to two distinct flows: the encrypted DR backup, and the live AI-agent inference path to Vertex AI. Mitigation for the DR backup: documented §26 instrument; encryption at rest with keys held in-country; access logged and audited. Mitigation for the inference path: de-identification at the application boundary (no NIC, phone, GPS, witness name, or payment identifier in any outbound payload); CDPA executed with Google Cloud as data processor; per-agent kill switch; quarterly external review of the de-identification service.
 - *AML/CTF or FX violation* in Phase 3. Mitigation: prefer not to handle funds; if funds handled, full AML/KYC stack and AML/CTF lawyer engaged from Phase 0.
 
 == Operational Risks

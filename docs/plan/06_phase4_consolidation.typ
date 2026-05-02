@@ -48,4 +48,4 @@ Phase 4 metrics also use a base / stretch / heroic ladder. The base case represe
   [Cooperative customers], [5], [10], [15],
 )
 
-In addition: a balanced funding mix with no single funder providing more than a documented threshold of revenue (see Section 9 funding plan); a published, peer-reviewed annual report on Northern civic infrastructure.
+In addition: a balanced funding mix with no single funder providing more than a documented threshold of revenue (see Section 10 funding plan); a published, peer-reviewed annual report on Northern civic infrastructure.
