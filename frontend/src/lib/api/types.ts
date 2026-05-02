@@ -176,3 +176,51 @@ export interface VerificationsListResponse {
 	verifications: Verification[];
 	document_id: string;
 }
+
+/**
+ * ProcedureStatus mirrors backend domain.ProcedureStatus. Citizens
+ * never see anything but `published` via the public API; admin views
+ * surface drafts and archived too.
+ */
+export type ProcedureStatus = 'draft' | 'published' | 'archived';
+
+/**
+ * Procedure mirrors backend domain.Procedure. fee_lkr_cents is in
+ * integer cents (LKR × 100) — divide by 100 for the display value;
+ * absence means the fee is not fixed at this verification level.
+ * last_verified_at is the citation timestamp shown in the trust card.
+ */
+export interface Procedure {
+	id: string;
+	slug: string;
+	title_ta: string;
+	title_en?: string;
+	summary_ta?: string;
+	summary_en?: string;
+	fee_lkr_cents?: number;
+	source_url?: string;
+	last_verified_at?: string;
+	status: ProcedureStatus;
+	created_at: string;
+	updated_at: string;
+}
+
+/** Body for POST/PUT /api/v1/admin/procedures. */
+export interface ProcedureRequest {
+	slug: string;
+	title_ta: string;
+	title_en?: string;
+	summary_ta?: string;
+	summary_en?: string;
+	fee_lkr_cents?: number | null;
+	source_url?: string;
+	last_verified_at?: string;
+	status?: ProcedureStatus;
+}
+
+/** Response shape from GET /api/v1/procedures (and admin variant). */
+export interface ProceduresListResponse {
+	procedures: Procedure[];
+	limit: number;
+	offset: number;
+}

@@ -9,6 +9,9 @@ import type {
 	HealthResponse,
 	HelloResponse,
 	MeResponse,
+	Procedure,
+	ProcedureRequest,
+	ProceduresListResponse,
 	User,
 	UserRolesResponse,
 	UsersListResponse,
@@ -83,6 +86,31 @@ export interface ApiClient {
 		input: CreateVerificationRequest,
 		opts?: { headers?: HeadersInit }
 	): Promise<Verification>;
+
+	/** GET /api/v1/procedures — public, only published rows. */
+	listPublicProcedures(opts?: {
+		limit?: number;
+		offset?: number;
+		headers?: HeadersInit;
+	}): Promise<ProceduresListResponse>;
+	/** GET /api/v1/procedures/{slug} — public, only published. */
+	getPublicProcedure(slug: string, opts?: { headers?: HeadersInit }): Promise<Procedure>;
+	/** GET /api/v1/admin/procedures — gated by `procedures:read`. */
+	listAdminProcedures(opts?: {
+		limit?: number;
+		offset?: number;
+		headers?: HeadersInit;
+	}): Promise<ProceduresListResponse>;
+	/** GET /api/v1/admin/procedures/{id} — gated by `procedures:read`. */
+	getAdminProcedure(id: string, opts?: { headers?: HeadersInit }): Promise<Procedure>;
+	/** POST /api/v1/admin/procedures — gated by `procedures:write`. */
+	createProcedure(input: ProcedureRequest, opts?: { headers?: HeadersInit }): Promise<Procedure>;
+	/** PUT /api/v1/admin/procedures/{id} — gated by `procedures:write`. */
+	updateProcedure(
+		id: string,
+		input: ProcedureRequest,
+		opts?: { headers?: HeadersInit }
+	): Promise<Procedure>;
 }
 
 export interface ApiClientOptions {
@@ -213,6 +241,46 @@ export function createApiClient({ fetch, baseUrl }: ApiClientOptions): ApiClient
 		createVerification: (input, opts) =>
 			request<Verification>('/api/v1/admin/verifications', {
 				method: 'POST',
+				headers: { 'Content-Type': 'application/json', ...(opts?.headers ?? {}) },
+				body: JSON.stringify(input)
+			}),
+
+		listPublicProcedures: (opts) => {
+			const params = new URLSearchParams();
+			if (opts?.limit !== undefined) params.set('limit', String(opts.limit));
+			if (opts?.offset !== undefined) params.set('offset', String(opts.offset));
+			const qs = params.toString();
+			return request<ProceduresListResponse>(`/api/v1/procedures${qs ? `?${qs}` : ''}`, {
+				headers: opts?.headers
+			});
+		},
+		getPublicProcedure: (slug, opts) =>
+			request<Procedure>(`/api/v1/procedures/${encodeURIComponent(slug)}`, {
+				headers: opts?.headers
+			}),
+		listAdminProcedures: (opts) => {
+			const params = new URLSearchParams();
+			if (opts?.limit !== undefined) params.set('limit', String(opts.limit));
+			if (opts?.offset !== undefined) params.set('offset', String(opts.offset));
+			const qs = params.toString();
+			return request<ProceduresListResponse>(
+				`/api/v1/admin/procedures${qs ? `?${qs}` : ''}`,
+				{ headers: opts?.headers }
+			);
+		},
+		getAdminProcedure: (id, opts) =>
+			request<Procedure>(`/api/v1/admin/procedures/${encodeURIComponent(id)}`, {
+				headers: opts?.headers
+			}),
+		createProcedure: (input, opts) =>
+			request<Procedure>('/api/v1/admin/procedures', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json', ...(opts?.headers ?? {}) },
+				body: JSON.stringify(input)
+			}),
+		updateProcedure: (id, input, opts) =>
+			request<Procedure>(`/api/v1/admin/procedures/${encodeURIComponent(id)}`, {
+				method: 'PUT',
 				headers: { 'Content-Type': 'application/json', ...(opts?.headers ?? {}) },
 				body: JSON.stringify(input)
 			})

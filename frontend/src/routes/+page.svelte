@@ -63,9 +63,12 @@
 		</section>
 
 		<!-- CTA -->
-		<section class="mb-14">
+		<section class="mb-14 flex flex-wrap gap-3">
+			<a href="/procedures">
+				<Button kind="primary" size="md">{m.home_procedures_link()}</Button>
+			</a>
 			<a href="/users/new">
-				<Button kind="primary" size="md">{m.register_cta()}</Button>
+				<Button kind="ghost" size="md">{m.register_cta()}</Button>
 			</a>
 		</section>
 
