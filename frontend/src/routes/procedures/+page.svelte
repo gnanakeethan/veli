@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import * as m from '$lib/paraglide/messages';
 	import Card from '$lib/components/ui/Card.svelte';
 	import CardContent from '$lib/components/ui/CardContent.svelte';
@@ -7,6 +8,34 @@
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+
+	const origin = $derived($page.url.origin);
+	const pageDescription = $derived(
+		`A directory of Sri Lankan Northern Province government procedures — birth certificate, NIC, Samurdhi, pensions and more — walked through and verified against the actual office by Veḷi field workers. ${data.procedures.length} ${data.procedures.length === 1 ? 'procedure' : 'procedures'} listed.`
+	);
+
+	// Schema.org JSON-LD: ItemList. Each procedure is a ListItem with
+	// the canonical URL to the detail page. Engines like Perplexity
+	// and Bing AI use this to enumerate and cite procedures.
+	const jsonLd = $derived(
+		JSON.stringify({
+			'@context': 'https://schema.org',
+			'@type': 'ItemList',
+			name: m.procedures_index_title(),
+			description: pageDescription,
+			numberOfItems: data.procedures.length,
+			itemListElement: data.procedures.map((proc, i) => ({
+				'@type': 'ListItem',
+				position: i + 1,
+				item: {
+					'@type': 'GovernmentService',
+					name: proc.title_ta,
+					alternateName: proc.title_en ?? undefined,
+					url: `${origin}/procedures/${proc.slug}`
+				}
+			}))
+		})
+	);
 
 	function feeDisplay(cents: number | undefined): string {
 		if (cents === undefined || cents === null) return m.procedures_fee_unspecified();
@@ -26,6 +55,13 @@
 
 <svelte:head>
 	<title>{m.procedures_index_title()} · {m.app_name()}</title>
+	<meta name="description" content={pageDescription} />
+	<link rel="canonical" href={origin + '/procedures'} />
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content={`${m.procedures_index_title()} · ${m.app_name()}`} />
+	<meta property="og:description" content={pageDescription} />
+	<meta property="og:url" content={origin + '/procedures'} />
+	{@html `<script type="application/ld+json">${jsonLd}</script>`}
 </svelte:head>
 
 <div class="flex min-h-screen flex-col bg-paper-2 text-ink">

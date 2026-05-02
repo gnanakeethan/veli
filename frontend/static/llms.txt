@@ -1,0 +1,64 @@
+# Veḷi · வெளி
+
+> Open. Clear. Civic. — Tamil-first civic-technology platform for Sri Lanka's
+> Northern Province, operated by Cloud Parallax (Pvt) Ltd.
+
+Veḷi is a five-phase civic platform. Phase 1 — currently the only public
+surface — is a Tamil-first navigator for everyday government procedures
+(birth certificates, NIC, Samurdhi, pensions, etc.). Each procedure entry
+is walked through against the actual office by a Veḷi field worker before
+publication; the date of that walk-through is shown on every page as the
+trust signal.
+
+The platform also supports two future phases that are not yet public:
+land-and-property documentation (Phase 2) and agricultural traceability
+(Phase 3). All three product lines share one identity layer and one
+three-tier verification model.
+
+## Three-tier verification
+
+Every document or claim carries an explicit tier. The platform never
+inflates a lower tier into a higher one.
+
+- self_asserted — uploaded by the user; no legal effect.
+- community_corroborated — two or more named neighbours signed a witness
+  statement; useful evidence but no legal effect.
+- authority_attested — notary, lawyer, or government office attested;
+  legal effect under Sri Lankan law.
+
+## Public surfaces
+
+- /procedures — list of published government procedures (Tamil-first;
+  English secondary).
+- /procedures/<slug> — single procedure detail with bilingual title,
+  fee, last-verified date, source URL, step-by-step body content,
+  and a Trust card with the legal disclaimer.
+- /sitemap.xml — machine-readable index of every published procedure.
+- /llms.txt — this file.
+- /robots.txt — points to the sitemap.
+
+## What this site is not
+
+- Not a legal authority. Veḷi compiles procedure information; the
+  office's word is final.
+- Not a payment gateway. Citizens pay government fees in cash at the
+  relevant office.
+- Not a third-party messaging integration. Veḷi reaches users via the
+  PWA, voice (IVR), USSD short codes, SMS short codes, and a trained-
+  helper hotline — never through WhatsApp, Telegram, or similar.
+
+## Locales
+
+- Primary: Tamil (Jaffna register), code "ta"
+- Secondary: English ("en"), Sinhala ("si")
+
+## Authoritative source
+
+The Veḷi implementation plan and design system live in the project
+repository under docs/. The plan is the source of truth for which
+procedures are in scope, when they were last verified, and what the
+verification tier means in legal terms.
+
+## Contact
+
+Cloud Parallax (Pvt) Ltd — Jaffna, Sri Lanka.

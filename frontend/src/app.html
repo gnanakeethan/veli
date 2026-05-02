@@ -3,11 +3,37 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<!-- AEO / SEO baseline. Per-page <svelte:head> overrides title +
+		     description; everything below is the always-on default. -->
+		<meta
+			name="description"
+			content="Veḷi — Tamil-first navigator for Sri Lankan Northern Province government procedures. Find the right office, fee, form, and hours, with the date each entry was last verified by a Veḷi field worker."
+		/>
+		<meta name="application-name" content="Veḷi" />
+		<meta name="theme-color" content="#0E4D3F" />
+		<meta name="color-scheme" content="light" />
+		<meta name="format-detection" content="telephone=no" />
+
+		<!-- Open Graph defaults. og:type is set per-page (website on
+		     index pages, article on procedure detail) so scrapers that
+		     pick the first match don't get a conflicting value. -->
+		<meta property="og:site_name" content="Veḷi · வெளி" />
+		<meta property="og:locale" content="ta_LK" />
+		<meta property="og:locale:alternate" content="en_LK" />
+		<meta property="og:locale:alternate" content="si_LK" />
+
+		<!-- Twitter card defaults. -->
+		<meta name="twitter:card" content="summary" />
+
 		<link rel="icon" href="/favicon.svg" />
+		<link rel="apple-touch-icon" href="/favicon.svg" />
+		<link rel="manifest" href="/manifest.webmanifest" />
+
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
-			href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;600;700&display=swap"
 			rel="stylesheet"
 		/>
 		%sveltekit.head%

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import { goto } from '$app/navigation'
+	import { page } from '$app/stores'
 	import * as m from '$lib/paraglide/messages'
 	import type { PageData } from './+page.server'
 	import Card from '$lib/components/ui/Card.svelte'
@@ -14,6 +15,43 @@
 
 	let { data }: { data: PageData } = $props()
 
+	const origin = $derived($page.url.origin)
+	const pageDescription = $derived(
+		`Veḷi — Tamil-first navigator for Sri Lankan Northern Province government procedures. Find the right office, fee, form, and hours, with the date each entry was last verified by a Veḷi field worker.`
+	)
+
+	// Schema.org JSON-LD: WebSite + Organization. The site's primary
+	// purpose (government-procedure information) is named explicitly
+	// so AI answer engines can attribute citations correctly.
+	const jsonLd = $derived(
+		JSON.stringify({
+			'@context': 'https://schema.org',
+			'@graph': [
+				{
+					'@type': 'WebSite',
+					'@id': `${origin}#website`,
+					url: origin,
+					name: 'Veḷi · வெளி',
+					description: pageDescription,
+					inLanguage: ['ta', 'en', 'si'],
+					publisher: { '@id': `${origin}#organization` }
+				},
+				{
+					'@type': 'Organization',
+					'@id': `${origin}#organization`,
+					name: 'Cloud Parallax (Pvt) Ltd',
+					url: 'https://cloudparallax.com',
+					address: {
+						'@type': 'PostalAddress',
+						addressLocality: 'Jaffna',
+						addressRegion: 'Northern Province',
+						addressCountry: 'LK'
+					}
+				}
+			]
+		})
+	)
+
 	onMount(async () => {
 		try {
 			const { Capacitor } = await import('@capacitor/core')
@@ -25,6 +63,17 @@
 		}
 	})
 </script>
+
+<svelte:head>
+	<title>{m.app_name()} — {m.tagline()}</title>
+	<meta name="description" content={pageDescription} />
+	<link rel="canonical" href={origin + '/'} />
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content={`${m.app_name()} — ${m.tagline()}`} />
+	<meta property="og:description" content={pageDescription} />
+	<meta property="og:url" content={origin + '/'} />
+	{@html `<script type="application/ld+json">${jsonLd}</script>`}
+</svelte:head>
 
 <div class="flex min-h-screen flex-col bg-paper-2 text-ink page">
 	<main class="flex flex-1 flex-col px-6 py-12 max-w-5xl mx-auto w-full">

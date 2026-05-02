@@ -1,0 +1,22 @@
+{
+  "name": "Veḷi — வெளி",
+  "short_name": "Veḷi",
+  "description": "Tamil-first civic navigator for Sri Lanka's Northern Province",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F7F4EE",
+  "theme_color": "#0E4D3F",
+  "lang": "ta",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["government", "education", "utilities"]
+}
