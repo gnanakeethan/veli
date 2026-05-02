@@ -69,5 +69,31 @@
 	"admin_login_error_generic": "Sign-in failed. Please try again.",
 	"admin_login_error_generic_ta": "உள்நுழைய முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
 	"home_staff_signin": "Staff sign-in",
-	"home_staff_signin_ta": "நிர்வாகி நுழைவு"
+
+	"home_phase_status_title": "Where we are",
+	"home_phase_status_blurb": "Veḷi rolls out in five phases. Today we are in foundations — building the institutions, infrastructure, and trust layer that the rest depends on.",
+	"home_phase_current": "current",
+	"home_phase0_title": "Foundations",
+	"home_phase0_blurb": "Legal form, partnerships, hardware, language assets, governance. The work that does not show but everything else rests on.",
+	"home_phase4_title": "Consolidation",
+	"home_phase4_blurb": "Three product lines woven into one civic infrastructure. Stewardship, succession, sustainability.",
+
+	"home_verification_title": "Three-tier verification",
+	"home_verification_blurb": "Every document carries an explicit tier. Veḷi never inflates a self-asserted upload into something it is not. Only authority-attested has legal effect.",
+	"home_tier_self_asserted_blurb": "You uploaded it. We record who, when, where. No legal effect.",
+	"home_tier_community_corroborated_blurb": "Two or more named neighbours signed a witness statement. Useful evidence — still no legal effect.",
+	"home_tier_authority_attested_blurb": "Notary public, lawyer, or government office attested. Legal effect.",
+
+	"home_channels_title": "How Veḷi reaches you",
+	"home_channels_blurb": "A smartphone is not required. The same procedure information is available through channels that already work in Northern Province.",
+	"home_channel_pwa_title": "PWA",
+	"home_channel_pwa_desc": "Tamil-first web app, works offline, installs to home screen.",
+	"home_channel_ivr_title": "IVR",
+	"home_channel_ivr_desc": "Call and listen. Procedure spoken in Jaffna Tamil register.",
+	"home_channel_ussd_title": "USSD",
+	"home_channel_ussd_desc": "Short menu code from any phone. No data, no app.",
+	"home_channel_sms_title": "SMS",
+	"home_channel_sms_desc": "Text the shortcode, get the procedure summary back.",
+	"home_channel_hotline_title": "Hotline",
+	"home_channel_hotline_desc": "Speak with a trained Veḷi helper in Tamil. Cannot read or write? Use this."
 }
